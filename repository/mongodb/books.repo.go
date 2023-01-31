@@ -18,6 +18,7 @@ import (
 var (
 	err_BookNotFound      = errors.New("Book couldnot be found ")
 	err_NoBooksInCategory = errors.New("No Book is present in this category")
+	errWriteRecord        = errors.New("cannot write to repository")
 )
 
 type MongoBookRepository struct {
@@ -37,14 +38,14 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{"name": NewBook.Name,
-			"authors":       NewBook.Authors,
-			"co_authors":    NewBook.Co_Authors,
-			"audio_urls":    NewBook.AudiobookUrls,
-			"ebooks_url":    NewBook.EbookUrls,
-			"online_copies": NewBook.Onlinecopies,
-			"categories":    NewBook.Categories,
-			"createdAt":     NewBook.Created_Timestamp,
-			"updatedAt":     NewBook.Updated_Timestamp},
+			"authors":     NewBook.Authors,
+			"co_authors":  NewBook.Co_Authors,
+			"audio_urls":  NewBook.AudiobookUrls,
+			"ebook_urls":  NewBook.EbookUrls,
+			"hard_copies": NewBook.Hardcopies,
+			"categories":  NewBook.Categories,
+			"createdAt":   NewBook.Created_Timestamp,
+			"updatedAt":   NewBook.Updated_Timestamp},
 	)
 
 	if err != nil {

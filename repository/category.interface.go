@@ -7,12 +7,14 @@ import (
 
 type CategoryRepo interface {
 	SaveCategory(*domain.Category) error
-	GetCategoryByID(primitive.ObjectID) *domain.Category
-	GetCategoriesByManyIDs([]primitive.ObjectID) []*domain.Category
+	GetCategoryByID(primitive.ObjectID) (*domain.Category, error)
+	GetCategoriesByManyIDs([]primitive.ObjectID) ([]domain.Category, error)
+	GetCategoriesByNames([]string) ([]domain.Category, error)
+	GetIdsByNames([]string) ([]primitive.ObjectID, error)
 }
 
 type CategoryRepository struct {
-	repo CategoryRepo
+	Client CategoryRepo
 }
 
 func NewCategoryRepository(br CategoryRepo) *CategoryRepository {

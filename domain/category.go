@@ -1,18 +1,21 @@
 package domain
 
 import (
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Category struct {
-	Name              string
-	Id                primitive.ObjectID
-	SubCategories     []*Category
-	Created_Timestamp int64
-	Updated_Timestamp int64
+	Id                primitive.ObjectID   `bson:"_id"`
+	Name              string               `bson:"name" json:"name"`
+	SubCategories     []primitive.ObjectID `bson:"sub_categories" json:"sub_categories"`
+	Created_Timestamp int64                `bson:"created_timestamp" json:"created_timestamp"`
+	Updated_Timestamp int64                `bson:"updated_timestamp" json:"updated_timestamp"`
 }
 
-func NewCategory(name string, id uuid.UUID, subcategory []*Category, created_timestamp int64, updated_timestamp int64) *Category {
-	return &Category{name, id, subcategory, created_timestamp, updated_timestamp}
+func NewCategory(name string, subcategory []primitive.ObjectID, timestamp int64) *Category {
+	return &Category{Name: name,
+		SubCategories:     subcategory,
+		Created_Timestamp: timestamp,
+		Updated_Timestamp: timestamp,
+	}
 }
