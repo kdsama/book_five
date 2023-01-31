@@ -45,7 +45,8 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 			"hard_copies": NewBook.Hardcopies,
 			"categories":  NewBook.Categories,
 			"createdAt":   NewBook.Created_Timestamp,
-			"updatedAt":   NewBook.Updated_Timestamp},
+			"updatedAt":   NewBook.Updated_Timestamp,
+			"verified":    false},
 	)
 
 	if err != nil {

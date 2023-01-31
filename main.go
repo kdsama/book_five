@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"os"
+	"net/http"
 	"time"
 
+	"github.com/kdsama/book_five/api"
 	"github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	mongo_repo "github.com/kdsama/book_five/repository/mongodb"
@@ -24,21 +24,15 @@ func main() {
 	categoryrepo := repository.NewCategoryRepository(categoryMongoInstance)
 	categoryservice := service.NewCategoryService(*categoryrepo)
 	bookservice := service.NewBookService(*bookrepo, *categoryservice)
+	// categorySeeder(categoryservice)
 
-	categoryservice.SaveCategory("drama", []string{})
-	categoryservice.SaveCategory("action", []string{})
-	categoryservice.SaveCategory("comedy", []string{})
-	categoryservice.SaveCategory("fiction", []string{})
-	categoryservice.SaveCategory("thriller", []string{})
+	bookHandler := api.NewBookHandler(*bookservice)
+	http.HandleFunc("/api/v1/book", bookHandler.Req)
 
-	bookservice.SaveBook("I'd Like to Play Alone, Please: Essays", []string{"Tom Segura"},
-		[]string{},
-		[]string{"https://www.amazon.co.uk/Id-Like-Play-Alone-Please/dp/B09QXP8GD1/ref=tmm_aud_swatch_0?_encoding=UTF8&qid=&sr="},
-		[]string{}, []string{"https://www.amazon.co.uk/Id-Like-Play-Alone-Please/dp/1538704633"}, []string{"comedy"})
-	fmt.Println("So this is done ")
-	os.Exit(0)
+	log.Fatal(http.ListenAndServe(":8090", nil))
 
 }
+
 func ConnectMongo(ctx context.Context) *mongodb.MongoClient {
 	mongoClient := mongodb.GetMongoClient("mongodb://localhost:27017", "book_five")
 	err := mongoClient.Client.Ping(ctx, nil)
