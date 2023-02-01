@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	err_BookNotFound      = errors.New("Book couldnot be found ")
-	err_NoBooksInCategory = errors.New("No Book is present in this category")
-	errWriteRecord        = errors.New("cannot write to repository")
+	Err_BookNotFound      = errors.New("Book couldnot be found ")
+	Err_NoBooksInCategory = errors.New("No Book is present in this category")
+	ErrWriteRecord        = errors.New("cannot write to repository")
 )
 
 type MongoBookRepository struct {
@@ -50,7 +50,7 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 	)
 
 	if err != nil {
-		return errWriteRecord
+		return ErrWriteRecord
 	}
 	return nil
 }

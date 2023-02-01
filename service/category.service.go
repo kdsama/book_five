@@ -15,7 +15,7 @@ type CategoryService struct {
 func NewCategoryService(category repository.CategoryRepository) *CategoryService {
 	return &CategoryService{category}
 }
-func (bs *CategoryService) SaveCategory(name string, categories []string) {
+func (bs *CategoryService) SaveCategory(name string, categories []string) error {
 	// validation checks already done in the http handler .
 	// We just need to save it for now.
 	timestamp := time.Now().Unix()
@@ -23,16 +23,18 @@ func (bs *CategoryService) SaveCategory(name string, categories []string) {
 	CategoryObjects := []primitive.ObjectID{}
 	var err error
 	if len(categories) != 0 {
-		CategoryObjects, err = bs.categoryRepo.Client.GetIdsByNames(categories)
+		CategoryObjects, err = bs.categoryRepo.GetIdsByNames(categories)
 		if err != nil {
 			//
+			return err
 		}
 	}
 	CategoryObject := domain.NewCategory(name, CategoryObjects, timestamp)
-	bs.categoryRepo.Client.SaveCategory(CategoryObject)
+	bs.categoryRepo.SaveCategory(CategoryObject)
+	return nil
 
 }
 
 func (bs *CategoryService) GetIdsByNames(names []string) ([]primitive.ObjectID, error) {
-	return bs.categoryRepo.Client.GetIdsByNames(names)
+	return bs.categoryRepo.GetIdsByNames(names)
 }

@@ -7,7 +7,7 @@ type BookRepo interface {
 }
 
 type BookRepository struct {
-	Client BookRepo
+	BookRepo
 }
 
 func NewBookRepository(br BookRepo) *BookRepository {

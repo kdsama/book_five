@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -9,12 +10,17 @@ import (
 	"github.com/kdsama/book_five/repository"
 )
 
+var (
+	Err_Invalid_Categories = errors.New("Categories are invalid")
+	Err_Invalid_Category   = errors.New("Category is invalid")
+)
+
 type BookService struct {
 	bookRepo   repository.BookRepository
-	catService CategoryService
+	catService CategoryDI
 }
 
-func NewBookService(book repository.BookRepository, catService CategoryService) *BookService {
+func NewBookService(book repository.BookRepository, catService CategoryDI) *BookService {
 	return &BookService{book, catService}
 }
 func (bs *BookService) SaveBook(name string, authors []string, co_authors []string, audiobook_urls []string, ebook_urls []string, hard_copies []string, categories []string) error {
@@ -26,11 +32,17 @@ func (bs *BookService) SaveBook(name string, authors []string, co_authors []stri
 	if err != nil {
 		return err
 	}
+	if len(categoryIds) == 0 {
+		fmt.Println(categoryIds)
+		if len(categories) == 1 {
+			return Err_Invalid_Category
+		}
+		return Err_Invalid_Categories
+	}
 	AudioBookObjects := []entity.UrlObject{}
 	EbookObjects := []entity.UrlObject{}
 	HardCopyObjects := []entity.UrlObject{}
 	for i := range audiobook_urls {
-		fmt.Println(audiobook_urls)
 		AudioBookObjects = append(AudioBookObjects, *entity.MakeUrlObject(audiobook_urls[i]))
 	}
 	for j := range ebook_urls {
@@ -39,9 +51,9 @@ func (bs *BookService) SaveBook(name string, authors []string, co_authors []stri
 	for k := range hard_copies {
 		HardCopyObjects = append(HardCopyObjects, *entity.MakeUrlObject(hard_copies[k]))
 	}
-	fmt.Println(AudioBookObjects)
+
 	BookObject := domain.NewBook(name, authors, co_authors, AudioBookObjects, EbookObjects, HardCopyObjects, categoryIds, timestamp)
-	err = bs.bookRepo.Client.SaveBook(BookObject)
+	err = bs.bookRepo.SaveBook(BookObject)
 	if err != nil {
 		return err
 	}

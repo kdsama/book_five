@@ -45,7 +45,14 @@ func (bh *BookHandler) postBook(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
+		return
 
+	}
+
+	if t.Name == "" || len(t.Authors) == 0 || len(t.Categories) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
+		return
 	}
 	bh.service.SaveBook(t.Name, t.Authors, t.Co_Authors, t.AudiobookUrls, t.EbookUrls, t.Hardcopies, t.Categories)
 }

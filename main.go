@@ -23,7 +23,8 @@ func main() {
 	categoryMongoInstance := mongo_repo.NewMongoCategoryRepository(mongoClient, "categories")
 	categoryrepo := repository.NewCategoryRepository(categoryMongoInstance)
 	categoryservice := service.NewCategoryService(*categoryrepo)
-	bookservice := service.NewBookService(*bookrepo, *categoryservice)
+	categoryInterface := service.NewCategoryServiceInterface(categoryservice)
+	bookservice := service.NewBookService(*bookrepo, *categoryInterface)
 	// categorySeeder(categoryservice)
 
 	bookHandler := api.NewBookHandler(*bookservice)

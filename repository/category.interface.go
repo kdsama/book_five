@@ -14,7 +14,7 @@ type CategoryRepo interface {
 }
 
 type CategoryRepository struct {
-	Client CategoryRepo
+	CategoryRepo
 }
 
 func NewCategoryRepository(br CategoryRepo) *CategoryRepository {
