@@ -43,7 +43,10 @@ func (mcs *MockCategoryService) GetIdsByNames(names []string) ([]primitive.Objec
 	if mcs.getError != "" {
 		if mcs.getError == "return_empty" {
 			return ObjectIds, nil
+		} else if mcs.getError == "not_found" {
+			return ObjectIds, mongodb.Err_CategoryNotFound
 		}
+
 		return ObjectIds, nil
 	}
 
@@ -107,8 +110,10 @@ func TestSaveBookErrors(t *testing.T) {
 	mbr := repository.NewBookRepository(&MockBookRepository{nil})
 	cs := NewCategoryServiceInterface(&MockCategoryService{"", "return_empty"})
 	cs1 := NewCategoryServiceInterface(&MockCategoryService{"", "return_empty"})
+	cs2 := NewCategoryServiceInterface(&MockCategoryService{"", "not_found"})
 	bs := NewBookService(*mbr, *cs)
 	bs1 := NewBookService(*mbr, *cs1)
+	bs2 := NewBookService(*mbr, *cs2)
 	type inputStruct struct {
 		name           string
 		authors        []string
@@ -124,7 +129,7 @@ func TestSaveBookErrors(t *testing.T) {
 		bs    *BookService
 	}
 	table := []test{
-		test{want: Err_Invalid_Category,
+		{want: Err_Invalid_Category,
 			input: inputStruct{
 				name:           "david-and-goliath",
 				authors:        []string{"david gog"},
@@ -135,7 +140,7 @@ func TestSaveBookErrors(t *testing.T) {
 				categories:     []string{"comedy"}},
 			bs: bs,
 		},
-		test{want: Err_Invalid_Categories,
+		{want: Err_Invalid_Categories,
 			input: inputStruct{
 				name:           "david-and-goliath",
 				authors:        []string{"david gog"},
@@ -145,6 +150,17 @@ func TestSaveBookErrors(t *testing.T) {
 				hard_copies:    []string{},
 				categories:     []string{"comedy", "dark_comedy"}},
 			bs: bs1,
+		},
+		{want: mongodb.Err_CategoryNotFound,
+			input: inputStruct{
+				name:           "david-and-goliath",
+				authors:        []string{"david gog"},
+				co_authors:     []string{},
+				audiobook_urls: []string{},
+				ebook_urls:     []string{},
+				hard_copies:    []string{},
+				categories:     []string{"comedy", "dark_comedy"}},
+			bs: bs2,
 		},
 	}
 	for _, object := range table {
