@@ -25,9 +25,10 @@ func main() {
 	categoryservice := service.NewCategoryService(*categoryrepo)
 	categoryInterface := service.NewCategoryServiceInterface(categoryservice)
 	bookservice := service.NewBookService(*bookrepo, *categoryInterface)
+	bookInterface := service.NewBookServiceInterface(bookservice)
 	// categorySeeder(categoryservice)
 
-	bookHandler := api.NewBookHandler(*bookservice)
+	bookHandler := api.NewBookHandler(*bookInterface)
 	http.HandleFunc("/api/v1/book", bookHandler.Req)
 
 	log.Fatal(http.ListenAndServe(":8090", nil))
