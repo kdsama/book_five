@@ -19,8 +19,6 @@ type Book struct {
 	Verified          bool                 `bson:"verified" json:"verified"`
 }
 
-var book_Collection = []Book{}
-
 func NewBook(name string, authors []string, co_authors []string, audio []entity.UrlObject, ebook []entity.UrlObject, hardcopy []entity.UrlObject, categories []primitive.ObjectID, timestamp int64) *Book {
 
 	return &Book{Name: name, Authors: authors, Co_Authors: co_authors, AudiobookUrls: audio, EbookUrls: ebook, Hardcopies: hardcopy, Categories: categories, Created_Timestamp: timestamp}

@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	Err_Invalid_Categories = errors.New("Categories are invalid")
-	Err_Invalid_Category   = errors.New("Category is invalid")
+	Err_Invalid_Categories = errors.New("categories are invalid")
+	Err_Invalid_Category   = errors.New("category is invalid")
 )
 
 type BookService struct {
