@@ -15,12 +15,12 @@ type InputUser struct {
 }
 
 type UserHandler struct {
-	service service.UserService
+	service service.UserDI
 }
 
 var MIN_PASSWORD_HASH_LENGTH int = 30
 
-func NewUserHandler(bookservice service.UserService) *UserHandler {
+func NewUserHandler(bookservice service.UserDI) *UserHandler {
 
 	return &UserHandler{bookservice}
 
@@ -54,7 +54,12 @@ func (bh *UserHandler) postUser(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
 		return
 	}
-	bh.service.SaveUser(t.Email, t.Password)
+	err = bh.service.SaveUser(t.Email, t.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintln(http.StatusInternalServerError)))
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write([]byte("ok"))
