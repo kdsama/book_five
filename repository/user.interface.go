@@ -4,6 +4,7 @@ import "github.com/kdsama/book_five/domain"
 
 type UserRepo interface {
 	SaveUser(*domain.User) error
+	GetUserByEmail(string) (*domain.User, error)
 }
 
 type UserRepository struct {

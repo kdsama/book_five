@@ -5,7 +5,6 @@ import (
 
 	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/repository"
-	"github.com/kdsama/book_five/repository/mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -30,7 +29,7 @@ func (mbr *MockBookRepository) SaveBook(NewBook *domain.Book) error {
 
 func (mcs *MockCategoryService) SaveCategory(name string, categories []string) error {
 	if mcs.saveError != "" {
-		return mongodb.ErrWriteRecord
+		return repository.ErrWriteRecord
 	}
 	return nil
 	//
@@ -44,7 +43,7 @@ func (mcs *MockCategoryService) GetIdsByNames(names []string) ([]primitive.Objec
 		if mcs.getError == "return_empty" {
 			return ObjectIds, nil
 		} else if mcs.getError == "not_found" {
-			return ObjectIds, mongodb.Err_CategoryNotFound
+			return ObjectIds, repository.Err_CategoryNotFound
 		}
 
 		return ObjectIds, nil
@@ -151,7 +150,7 @@ func TestSaveBookErrors(t *testing.T) {
 				categories:     []string{"comedy", "dark_comedy"}},
 			bs: bs1,
 		},
-		{want: mongodb.Err_CategoryNotFound,
+		{want: repository.Err_CategoryNotFound,
 			input: inputStruct{
 				name:           "david-and-goliath",
 				authors:        []string{"david gog"},

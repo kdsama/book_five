@@ -4,22 +4,18 @@ import (
 	// "encoding/json"
 
 	"context"
-	"errors"
 	"time"
 
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
+	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	// "errors"
 	// "log"
 	// "fmt"
 )
 
-var (
-	Err_BookNotFound      = errors.New("Book couldnot be found ")
-	Err_NoBooksInCategory = errors.New("No Book is present in this category")
-	ErrWriteRecord        = errors.New("cannot write to repository")
-)
+var ()
 
 type MongoBookRepository struct {
 	repo    mongoUtils.MongoClient
@@ -50,7 +46,7 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 	)
 
 	if err != nil {
-		return ErrWriteRecord
+		return repository.ErrWriteRecord
 	}
 	return nil
 }

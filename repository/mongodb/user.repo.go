@@ -4,19 +4,16 @@ import (
 	// "encoding/json"
 
 	"context"
-	"errors"
 	"time"
 
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
+	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	// "errors"
 	// "log"
 	// "fmt"
-)
-
-var (
-	Err_UserNotFound = errors.New("user couldnot be found")
 )
 
 type MongoUserRepository struct {
@@ -44,7 +41,25 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 	)
 
 	if err != nil {
-		return ErrWriteRecord
+		return repository.ErrWriteRecord
 	}
 	return nil
+}
+
+func (g *MongoUserRepository) GetUserByEmail(email string) (*domain.User, error) {
+	var result domain.User
+
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	ctx := mongoUtils.GetQueryContext()
+
+	query := bson.M{"email": email}
+	err := col.FindOne(ctx, query).Decode(&result)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &result, repository.Err_UserNotFound
+		}
+		return &result, err
+	}
+	return &result, nil
 }

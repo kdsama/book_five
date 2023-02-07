@@ -4,23 +4,18 @@ import (
 	// "encoding/json"
 
 	"context"
-	"errors"
 	"log"
 	"time"
 
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
+	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "errors"
 	// "log"
 	// "fmt"
-)
-
-var (
-	Err_CategoryNotFound      = errors.New("Category couldnot be found ")
-	Err_NoCategorysInCategory = errors.New("No Category is present in this category")
 )
 
 type MongoCategoryRepository struct {
@@ -46,7 +41,7 @@ func (g *MongoCategoryRepository) SaveCategory(NewCategory *domain.Category) err
 	)
 
 	if err != nil {
-		return ErrWriteRecord
+		return repository.ErrWriteRecord
 	}
 	return nil
 }
@@ -60,7 +55,7 @@ func (g *MongoCategoryRepository) GetCategoryByID(id primitive.ObjectID) (*domai
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return &result, Err_CategoryNotFound
+		return &result, repository.Err_CategoryNotFound
 	}
 
 	return &result, nil
@@ -75,7 +70,7 @@ func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []primitive.ObjectI
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return result, Err_CategoryNotFound
+		return result, repository.Err_CategoryNotFound
 	}
 
 	return result, nil
@@ -91,7 +86,7 @@ func (g *MongoCategoryRepository) GetCategoriesByNames(names []string) ([]domain
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return result, Err_CategoryNotFound
+		return result, repository.Err_CategoryNotFound
 	}
 
 	return result, nil
@@ -111,11 +106,11 @@ func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]primitive.Obj
 
 	if err != nil {
 		log.Println(err)
-		return to_return, Err_CategoryNotFound
+		return to_return, repository.Err_CategoryNotFound
 	}
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		log.Println(err)
-		return to_return, Err_CategoryNotFound
+		return to_return, repository.Err_CategoryNotFound
 	}
 	for _, category := range results {
 		to_return = append(to_return, category.Id)

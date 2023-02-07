@@ -24,12 +24,20 @@ func main() {
 	categoryrepo := repository.NewCategoryRepository(categoryMongoInstance)
 	categoryservice := service.NewCategoryService(*categoryrepo)
 	categoryInterface := service.NewCategoryServiceInterface(categoryservice)
-	bookservice := service.NewBookService(*bookrepo, *categoryInterface)
-	bookInterface := service.NewBookServiceInterface(bookservice)
 	// categorySeeder(categoryservice)
 
+	bookservice := service.NewBookService(*bookrepo, *categoryInterface)
+	bookInterface := service.NewBookServiceInterface(bookservice)
 	bookHandler := api.NewBookHandler(*bookInterface)
+
+	userMongoInstance := mongo_repo.NewMongoUserRepository(mongoClient, "user")
+	userrepo := repository.NewUserRepository(userMongoInstance)
+	userservice := service.NewUserService(*userrepo)
+	userInterface := service.NewUserServiceInterface(userservice)
+	userHandler := api.NewUserHandler(*userInterface)
+
 	http.HandleFunc("/api/v1/book", bookHandler.Req)
+	http.HandleFunc("/api/v1/user", userHandler.Req)
 
 	log.Fatal(http.ListenAndServe(":8090", nil))
 
