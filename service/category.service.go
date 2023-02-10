@@ -5,7 +5,6 @@ import (
 
 	domain "github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/repository"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CategoryService struct {
@@ -20,7 +19,7 @@ func (bs *CategoryService) SaveCategory(name string, categories []string) error 
 	// We just need to save it for now.
 	timestamp := time.Now().Unix()
 	// Get all Ids of categories
-	CategoryObjects := []primitive.ObjectID{}
+	CategoryObjects := []string{}
 	var err error
 	if len(categories) != 0 {
 		CategoryObjects, err = bs.categoryRepo.GetIdsByNames(categories)
@@ -35,6 +34,6 @@ func (bs *CategoryService) SaveCategory(name string, categories []string) error 
 
 }
 
-func (bs *CategoryService) GetIdsByNames(names []string) ([]primitive.ObjectID, error) {
+func (bs *CategoryService) GetIdsByNames(names []string) ([]string, error) {
 	return bs.categoryRepo.GetIdsByNames(names)
 }

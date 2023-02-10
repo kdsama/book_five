@@ -11,7 +11,6 @@ import (
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "errors"
 	// "log"
@@ -46,7 +45,7 @@ func (g *MongoCategoryRepository) SaveCategory(NewCategory *domain.Category) err
 	return nil
 }
 
-func (g *MongoCategoryRepository) GetCategoryByID(id primitive.ObjectID) (*domain.Category, error) {
+func (g *MongoCategoryRepository) GetCategoryByID(id string) (*domain.Category, error) {
 	var result domain.Category
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx := mongoUtils.GetQueryContext()
@@ -61,7 +60,7 @@ func (g *MongoCategoryRepository) GetCategoryByID(id primitive.ObjectID) (*domai
 	return &result, nil
 
 }
-func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []primitive.ObjectID) ([]domain.Category, error) {
+func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []string) ([]domain.Category, error) {
 	var result []domain.Category
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx := mongoUtils.GetQueryContext()
@@ -93,9 +92,9 @@ func (g *MongoCategoryRepository) GetCategoriesByNames(names []string) ([]domain
 
 }
 
-func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]primitive.ObjectID, error) {
+func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]string, error) {
 
-	var to_return []primitive.ObjectID
+	var to_return []string
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	var results []domain.Category
 	ctx := mongoUtils.GetQueryContext()

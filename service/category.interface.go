@@ -1,10 +1,8 @@
 package service
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type CategoryServiceInterface interface {
 	SaveCategory(name string, categories []string) error
-	GetIdsByNames(names []string) ([]primitive.ObjectID, error)
+	GetIdsByNames(names []string) ([]string, error)
 }
 
 type CategoryDI struct {

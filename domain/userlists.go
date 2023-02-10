@@ -2,7 +2,6 @@ package domain
 
 import (
 	"github.com/kdsama/book_five/entity"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserLists struct {
@@ -28,13 +27,13 @@ type UserLists struct {
 	// for now a blank function which returns 5 , maybe
 	// Length of the list cannot be more than 5 as well
 
-	ID        primitive.ObjectID `bson:"_id"`
-	User_ID   primitive.ObjectID `bson:"user_id"`
-	Name      string             `json:"name" bson:"name"`
-	Reactions entity.Reaction    `json:"reaction" bson:"reaction"`
-	Comments  []ListComment      `json:"comments" bson:"comments"`
-	CreatedAt int64              `json:"created_at" bson:"created_at"`
-	UpdatedAt int64              `json:"updated_at" bson:"updated_at"`
+	ID        string          `bson:"_id"`
+	User_ID   string          `bson:"user_id"`
+	Name      string          `json:"name" bson:"name"`
+	Reactions entity.Reaction `json:"reaction" bson:"reaction"`
+	Comments  []ListComment   `json:"comments" bson:"comments"`
+	CreatedAt int64           `json:"created_at" bson:"created_at"`
+	UpdatedAt int64           `json:"updated_at" bson:"updated_at"`
 }
 
 func NewUserList(books []Book, name string, timestamp int64) *UserLists {

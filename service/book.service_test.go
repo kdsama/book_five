@@ -35,9 +35,9 @@ func (mcs *MockCategoryService) SaveCategory(name string, categories []string) e
 	//
 }
 
-func (mcs *MockCategoryService) GetIdsByNames(names []string) ([]primitive.ObjectID, error) {
+func (mcs *MockCategoryService) GetIdsByNames(names []string) ([]string, error) {
 
-	ObjectIds := []primitive.ObjectID{}
+	ObjectIds := []string{}
 
 	if mcs.getError != "" {
 		if mcs.getError == "return_empty" {
