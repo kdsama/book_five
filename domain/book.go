@@ -5,7 +5,7 @@ import (
 )
 
 type Book struct {
-	Id                string             `bson:"_id"`
+	ID                string             `bson:"uuid"`
 	Name              string             `bson:"name" json:"name"`
 	Authors           []string           `bson:"authors" json:"authors"`
 	Co_Authors        []string           `bson:"co_authors" json:"co_authors"`

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/service"
 )
 
@@ -16,6 +17,9 @@ type MockBookService struct {
 func (mbs *MockBookService) SaveBook(name string, authors []string, co_authors []string, audiobook_urls []string,
 	ebook_urls []string, hard_copies []string, categories []string) error {
 	return nil
+}
+func (mbs *MockBookService) UpsertBooksAndGetIDs([]domain.Book) ([]string, []error) {
+	return []string{""}, []error{}
 }
 func TestBookService(t *testing.T) {
 

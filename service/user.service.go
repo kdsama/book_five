@@ -44,3 +44,10 @@ func (us *UserService) SaveUser(email string, password string) error {
 	us.UserRepo.SaveUser(userObject)
 	return nil
 }
+
+func (us *UserService) GetUserByID(id string) (*domain.User, error) {
+	user, err := us.UserRepo.GetUserById(id)
+
+	return user, err
+
+}

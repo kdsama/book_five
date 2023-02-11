@@ -10,6 +10,7 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
+	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "errors"
@@ -33,7 +34,9 @@ func (g *MongoCategoryRepository) SaveCategory(NewCategory *domain.Category) err
 
 	_, err := col.InsertOne(
 		ctx,
-		bson.M{"name": NewCategory.Name,
+		bson.M{
+			"uuid":           utils.GenerateUUID(),
+			"name":           NewCategory.Name,
 			"sub_categories": NewCategory.SubCategories,
 			"createdAt":      NewCategory.Created_Timestamp,
 			"updatedAt":      NewCategory.Updated_Timestamp},
@@ -50,7 +53,7 @@ func (g *MongoCategoryRepository) GetCategoryByID(id string) (*domain.Category, 
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx := mongoUtils.GetQueryContext()
 
-	query := bson.M{"_id": id}
+	query := bson.M{"uuid": id}
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
@@ -65,7 +68,7 @@ func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []string) ([]domain
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx := mongoUtils.GetQueryContext()
 
-	query := bson.M{"_id": bson.M{"$in": ids}}
+	query := bson.M{"uuid": bson.M{"$in": ids}}
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
@@ -81,7 +84,7 @@ func (g *MongoCategoryRepository) GetCategoriesByNames(names []string) ([]domain
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx := mongoUtils.GetQueryContext()
 
-	query := bson.M{"_id": bson.M{"$in": names}}
+	query := bson.M{"uuid": bson.M{"$in": names}}
 	err := col.FindOne(ctx, query).Decode(&result)
 	if err != nil {
 		log.Println(err)
@@ -100,7 +103,7 @@ func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]string, error
 	ctx := mongoUtils.GetQueryContext()
 
 	filter := bson.M{"name": bson.M{"$in": names}}
-	opts := options.Find().SetProjection(bson.M{"_id": 1})
+	opts := options.Find().SetProjection(bson.M{"uuid": 1})
 	cursor, err := col.Find(ctx, filter, opts)
 
 	if err != nil {

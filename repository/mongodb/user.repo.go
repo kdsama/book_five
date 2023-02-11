@@ -9,6 +9,7 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
+	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	// "errors"
@@ -33,6 +34,7 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{
+			"uuid":       utils.GenerateUUID(),
 			"email":      NewUser.Email,
 			"created_at": NewUser.CreatedAt,
 			"updated_at": NewUser.UpdatedAt,
@@ -44,6 +46,24 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 		return repository.ErrWriteRecord
 	}
 	return nil
+}
+
+func (g *MongoUserRepository) GetUserById(id string) (*domain.User, error) {
+	var result domain.User
+
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	ctx := mongoUtils.GetQueryContext()
+
+	query := bson.M{"uuid": id}
+	err := col.FindOne(ctx, query).Decode(&result)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &result, repository.Err_UserNotFound
+		}
+		return &result, err
+	}
+	return &result, nil
 }
 
 func (g *MongoUserRepository) GetUserByEmail(email string) (*domain.User, error) {

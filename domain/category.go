@@ -1,7 +1,7 @@
 package domain
 
 type Category struct {
-	Id                string   `bson:"_id"`
+	Id                string   `bson:"uuid"`
 	Name              string   `bson:"name" json:"name"`
 	SubCategories     []string `bson:"sub_categories" json:"sub_categories"`
 	Created_Timestamp int64    `bson:"created_timestamp" json:"created_timestamp"`

@@ -5,7 +5,7 @@ import (
 
 	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/repository"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/kdsama/book_five/utils"
 )
 
 type MockBookRepository struct {
@@ -26,7 +26,9 @@ func (mbr *MockBookRepository) SaveBook(NewBook *domain.Book) error {
 	MockBooks = append(MockBooks, NewBook)
 	return nil
 }
-
+func (mbr *MockBookRepository) UpsertBooksAndGetIDs([]*domain.Book) []error {
+	return []error{nil}
+}
 func (mcs *MockCategoryService) SaveCategory(name string, categories []string) error {
 	if mcs.saveError != "" {
 		return repository.ErrWriteRecord
@@ -50,7 +52,7 @@ func (mcs *MockCategoryService) GetIdsByNames(names []string) ([]string, error) 
 	}
 
 	for _ = range names {
-		ObjectIds = append(ObjectIds, primitive.NewObjectID())
+		ObjectIds = append(ObjectIds, utils.GenerateUUID())
 	}
 	return ObjectIds, nil
 

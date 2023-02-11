@@ -4,7 +4,7 @@ import (
 	"github.com/kdsama/book_five/entity"
 )
 
-type UserLists struct {
+type UserList struct {
 	// what a user would like to put on as lists
 	// there will be different lists
 	// list can be distinguished by categories
@@ -27,8 +27,9 @@ type UserLists struct {
 	// for now a blank function which returns 5 , maybe
 	// Length of the list cannot be more than 5 as well
 
-	ID        string          `bson:"_id"`
+	ID        string          `bson:"uuid"`
 	User_ID   string          `bson:"user_id"`
+	Book_IDs  []string        `json:"book_ids" bson:"book_ids"`
 	Name      string          `json:"name" bson:"name"`
 	Reactions entity.Reaction `json:"reaction" bson:"reaction"`
 	Comments  []ListComment   `json:"comments" bson:"comments"`
@@ -36,7 +37,7 @@ type UserLists struct {
 	UpdatedAt int64           `json:"updated_at" bson:"updated_at"`
 }
 
-func NewUserList(books []Book, name string, timestamp int64) *UserLists {
+func NewUserList(user_id string, book_ids []string, name string, timestamp int64) *UserList {
 
-	return &UserLists{}
+	return &UserList{"", user_id, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
 }
