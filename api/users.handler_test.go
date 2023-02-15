@@ -19,7 +19,7 @@ type MockUserService struct {
 func (mbs *MockUserService) SaveUser(email string, password string) error {
 	return mbs.err
 }
-func (mbs *MockUserService) GetUserById(id string) (*domain.User, error) {
+func (mbs *MockUserService) GetUserByID(id string) (*domain.User, error) {
 	return &domain.User{}, mbs.err
 }
 func TestUser(t *testing.T) {

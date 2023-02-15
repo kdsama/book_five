@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/service"
 )
 
@@ -18,9 +17,7 @@ func (mbs *MockBookService) SaveBook(name string, authors []string, co_authors [
 	ebook_urls []string, hard_copies []string, categories []string) error {
 	return nil
 }
-func (mbs *MockBookService) FindOrInsertBooksAndGetID([]domain.Book) ([]string, []error, int) {
-	return []string{""}, []error{}, 0
-}
+
 func TestBookService(t *testing.T) {
 
 	// Test Save Book

@@ -20,6 +20,17 @@ func (mub *mockUserRepo) SaveUser(user *domain.User) error {
 
 	return mub.err
 }
+func (mub *mockUserRepo) GetUserById(user_id string) (*domain.User, error) {
+	if mub.err != nil {
+		return &domain.User{}, mub.err
+	}
+	for i := range mockUsers {
+		if mockUsers[i].Id == user_id {
+			return &mockUsers[i], nil
+		}
+	}
+	return &domain.User{}, repository.Err_UserNotFound
+}
 func (mub *mockUserRepo) GetUserByEmail(email string) (*domain.User, error) {
 	if mub.err != nil {
 		return &domain.User{}, mub.err
@@ -32,6 +43,7 @@ func (mub *mockUserRepo) GetUserByEmail(email string) (*domain.User, error) {
 	}
 	return &domain.User{}, repository.Err_UserNotFound
 }
+
 func TestSaveUser(t *testing.T) {
 	TestSaveUserErrors(t)
 	type userInput struct {

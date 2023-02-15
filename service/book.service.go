@@ -59,9 +59,3 @@ func (bs *BookService) SaveBook(name string, authors []string, co_authors []stri
 	}
 	return nil
 }
-
-func (bs *BookService) FindOrInsertBooksAndGetID(books []domain.Book) ([]string, []error) {
-	return bs.bookRepo.FindOrInsertBooksAndGetID(books)
-}
-
-// FindOrInsertBooksAndGetID

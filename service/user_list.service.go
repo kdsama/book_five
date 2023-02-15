@@ -30,7 +30,7 @@ func NewUserListService(user UserServiceInterface, book BookServiceInterface, us
 
 func (uls *UserListService) SaveUserList(user_id string, list_name string, book_ids []string) error {
 
-	user, err := uls.user.GetUserById(user_id)
+	user, err := uls.user.GetUserByID(user_id)
 	if err != nil {
 		// User just might not be present
 		return err
