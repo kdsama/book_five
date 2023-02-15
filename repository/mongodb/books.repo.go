@@ -55,7 +55,7 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 	return nil
 }
 
-func (g *MongoBookRepository) UpsertBooksAndGetIDs(books []domain.Book) ([]string, []error, int) {
+func (g *MongoBookRepository) FindOrInsertBooksAndGetID(books []domain.Book) ([]string, []error, int) {
 
 	errorSlice := []error{}
 	idSlice := []string{}
@@ -64,17 +64,23 @@ func (g *MongoBookRepository) UpsertBooksAndGetIDs(books []domain.Book) ([]strin
 	errCount := 0
 	for _, book := range books {
 		var result domain.Book
+		var err error
+		if book.ID != "" {
+			query := bson.M{"uuid": book.ID}
 
-		query := bson.M{"uuid": book.ID}
-		err := col.FindOne(ctx, query).Decode(&result)
-		if err != nil && err != mongo.ErrNoDocuments {
-			errorSlice = append(errorSlice, err)
-			errCount++
-			idSlice = append(idSlice, "")
+			err = col.FindOne(ctx, query).Decode(&result)
+			if err != nil && err != mongo.ErrNoDocuments {
+				errorSlice = append(errorSlice, err)
+				errCount++
+				idSlice = append(idSlice, "")
 
+			}
 		}
+
 		uuid := utils.GenerateUUID()
-		if err == mongo.ErrNoDocuments {
+		// If BookdId was not empty and we got NoDocument Error
+		// This will barely happen .
+		if err == mongo.ErrNoDocuments || (err == nil && book.ID == "") {
 			_, err := col.InsertOne(
 				ctx,
 				bson.M{

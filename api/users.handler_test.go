@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/service"
 )
 
@@ -17,6 +18,9 @@ type MockUserService struct {
 
 func (mbs *MockUserService) SaveUser(email string, password string) error {
 	return mbs.err
+}
+func (mbs *MockUserService) GetUserById(id string) (*domain.User, error) {
+	return &domain.User{}, mbs.err
 }
 func TestUser(t *testing.T) {
 

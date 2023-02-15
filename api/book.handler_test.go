@@ -18,8 +18,8 @@ func (mbs *MockBookService) SaveBook(name string, authors []string, co_authors [
 	ebook_urls []string, hard_copies []string, categories []string) error {
 	return nil
 }
-func (mbs *MockBookService) UpsertBooksAndGetIDs([]domain.Book) ([]string, []error) {
-	return []string{""}, []error{}
+func (mbs *MockBookService) FindOrInsertBooksAndGetID([]domain.Book) ([]string, []error, int) {
+	return []string{""}, []error{}, 0
 }
 func TestBookService(t *testing.T) {
 

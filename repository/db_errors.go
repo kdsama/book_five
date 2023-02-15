@@ -3,8 +3,8 @@ package repository
 import "errors"
 
 var (
-	Err_UserNotFound = errors.New("user couldnot be found")
-
+	Err_UserNotFound          = errors.New("user couldnot be found")
+	Err_NoUserListFound       = errors.New("No user list was found")
 	Err_BookNotFound          = errors.New("book couldnot be found ")
 	Err_NoBooksInCategory     = errors.New("no Book is present in this category")
 	ErrWriteRecord            = errors.New("cannot write to repository")

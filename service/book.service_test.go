@@ -26,8 +26,8 @@ func (mbr *MockBookRepository) SaveBook(NewBook *domain.Book) error {
 	MockBooks = append(MockBooks, NewBook)
 	return nil
 }
-func (mbr *MockBookRepository) UpsertBooksAndGetIDs([]*domain.Book) []error {
-	return []error{nil}
+func (mbr *MockBookRepository) FindOrInsertBooksAndGetID([]domain.Book) ([]string, []error) {
+	return []string{}, []error{}
 }
 func (mcs *MockCategoryService) SaveCategory(name string, categories []string) error {
 	if mcs.saveError != "" {
