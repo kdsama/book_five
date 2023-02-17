@@ -3,9 +3,6 @@ package mongodb
 import (
 	// "encoding/json"
 
-	"context"
-	"time"
-
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
@@ -26,8 +23,9 @@ func NewMongoUserActivityRepository(m *mongoUtils.MongoClient, current string) *
 }
 
 func (g *MongoUserActivityRepository) SaveUserActivity(user_activity *domain.UserActivity) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := mongoUtils.GetQueryContext()
 	defer cancel()
+
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 
 	_, err := col.InsertOne(

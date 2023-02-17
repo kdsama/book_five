@@ -51,7 +51,8 @@ func (g *MongoCategoryRepository) SaveCategory(NewCategory *domain.Category) err
 func (g *MongoCategoryRepository) GetCategoryByID(id string) (*domain.Category, error) {
 	var result domain.Category
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	query := bson.M{"uuid": id}
 	err := col.FindOne(ctx, query).Decode(&result)
@@ -66,7 +67,8 @@ func (g *MongoCategoryRepository) GetCategoryByID(id string) (*domain.Category, 
 func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []string) ([]domain.Category, error) {
 	var result []domain.Category
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	query := bson.M{"uuid": bson.M{"$in": ids}}
 	err := col.FindOne(ctx, query).Decode(&result)
@@ -82,7 +84,8 @@ func (g *MongoCategoryRepository) GetCategoriesByManyIDs(ids []string) ([]domain
 func (g *MongoCategoryRepository) GetCategoriesByNames(names []string) ([]domain.Category, error) {
 	var result []domain.Category
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	query := bson.M{"uuid": bson.M{"$in": names}}
 	err := col.FindOne(ctx, query).Decode(&result)
@@ -100,7 +103,8 @@ func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]string, error
 	var to_return []string
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	var results []domain.Category
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	filter := bson.M{"name": bson.M{"$in": names}}
 	opts := options.Find().SetProjection(bson.M{"uuid": 1})

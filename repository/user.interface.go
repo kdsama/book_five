@@ -6,7 +6,7 @@ type UserRepo interface {
 	SaveUser(*domain.User) error
 	GetUserByEmail(string) (*domain.User, error)
 
-	GetUserById(string) (*domain.User, error)
+	CountUsersFromIDs([]string) (int64, error)
 }
 
 type UserRepository struct {

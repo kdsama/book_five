@@ -45,9 +45,8 @@ func (us *UserService) SaveUser(email string, password string) error {
 	return nil
 }
 
-func (us *UserService) GetUserByID(id string) (*domain.User, error) {
-	user, err := us.UserRepo.GetUserById(id)
+func (us *UserService) CountUsersFromIDs(user_ids []string) (int64, error) {
+	user, err := us.UserRepo.CountUsersFromIDs(user_ids)
 
 	return user, err
-
 }

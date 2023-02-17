@@ -10,7 +10,7 @@ func GetConnectionContext() context.Context {
 	return ctx
 }
 
-func GetQueryContext() context.Context {
-	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-	return ctx
+func GetQueryContext() (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	return ctx, cancel
 }

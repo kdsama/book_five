@@ -26,8 +26,9 @@ func NewMongoUserListRepository(m *mongoUtils.MongoClient, current string) *Mong
 }
 
 func (g *MongoUserListRepository) SaveUserList(user_list *domain.UserList) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := mongoUtils.GetQueryContext()
 	defer cancel()
+
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 
 	_, err := col.InsertOne(
@@ -48,4 +49,16 @@ func (g *MongoUserListRepository) SaveUserList(user_list *domain.UserList) error
 		return repository.ErrWriteRecord
 	}
 	return nil
+}
+
+func (g *MongoUserListRepository) CountExistingListsOfAUser(user_id string) (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	filter := bson.M{"uuid": user_id}
+	count, err := col.CountDocuments(ctx, filter)
+	if err != nil {
+		return 0, err
+	}
+	return count, err
 }

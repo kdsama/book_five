@@ -1,10 +1,8 @@
 package service
 
-import "github.com/kdsama/book_five/domain"
-
 type UserServiceInterface interface {
 	SaveUser(string, string) error
-	GetUserByID(string) (*domain.User, error)
+	CountUsersFromIDs([]string) (int64, error)
 }
 
 type UserDI struct {

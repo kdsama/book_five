@@ -3,9 +3,6 @@ package mongodb
 import (
 	// "encoding/json"
 
-	"context"
-	"time"
-
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
@@ -27,8 +24,9 @@ func NewMongoUserRepository(m *mongoUtils.MongoClient, current string) *MongoUse
 }
 
 func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := mongoUtils.GetQueryContext()
 	defer cancel()
+
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 
 	_, err := col.InsertOne(
@@ -52,7 +50,8 @@ func (g *MongoUserRepository) GetUserById(id string) (*domain.User, error) {
 	var result domain.User
 
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	query := bson.M{"uuid": id}
 	err := col.FindOne(ctx, query).Decode(&result)
@@ -70,7 +69,8 @@ func (g *MongoUserRepository) GetUserByEmail(email string) (*domain.User, error)
 	var result domain.User
 
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
-	ctx := mongoUtils.GetQueryContext()
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
 
 	query := bson.M{"email": email}
 	err := col.FindOne(ctx, query).Decode(&result)
@@ -82,4 +82,18 @@ func (g *MongoUserRepository) GetUserByEmail(email string) (*domain.User, error)
 		return &result, err
 	}
 	return &result, nil
+}
+
+func (g *MongoBookRepository) CountUsersFromIDs(user_ids []string) (int64, error) {
+
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
+
+	filter := bson.M{"uuid": bson.M{"$in": user_ids}}
+	count, err := col.CountDocuments(ctx, filter)
+	if err != nil {
+		return 0, err
+	}
+	return count, err
 }

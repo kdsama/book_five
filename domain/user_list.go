@@ -29,6 +29,7 @@ type UserList struct {
 
 	ID        string          `bson:"uuid"`
 	User_ID   string          `bson:"user_id"`
+	text      string          `bson:"about",json:"about"`
 	Book_IDs  []string        `json:"book_ids" bson:"book_ids"`
 	Name      string          `json:"name" bson:"name"`
 	Reactions entity.Reaction `json:"reaction" bson:"reaction"`
@@ -37,7 +38,7 @@ type UserList struct {
 	UpdatedAt int64           `json:"updated_at" bson:"updated_at"`
 }
 
-func NewUserList(user_id string, book_ids []string, name string, timestamp int64) *UserList {
+func NewUserList(user_id string, about string, book_ids []string, name string, timestamp int64) *UserList {
 
-	return &UserList{"", user_id, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
+	return &UserList{"", user_id, about, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
 }

@@ -28,7 +28,7 @@ func NewUserListService(user UserServiceInterface, book BookServiceInterface, us
 	return &UserListService{book, user, userlistRepo}
 }
 
-func (uls *UserListService) SaveUserList(user_id string, list_name string, book_ids []string) error {
+func (uls *UserListService) SaveUserList(user_id string, about string, list_name string, book_ids []string) error {
 
 	user, err := uls.user.GetUserByID(user_id)
 	if err != nil {
@@ -48,7 +48,7 @@ func (uls *UserListService) SaveUserList(user_id string, list_name string, book_
 
 	timestamp := utils.GetCurrentTimestamp()
 
-	userListObject := domain.NewUserList(user.Id, book_ids, list_name, timestamp)
+	userListObject := domain.NewUserList(user.Id, about, book_ids, list_name, timestamp)
 	list_count, err := uls.CountExistingListsOfAUser(user.Id)
 	if err != nil {
 		return err
