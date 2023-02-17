@@ -49,7 +49,7 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 	timestamp := utils.GetCurrentTimestamp()
 
 	userListObject := domain.NewUserList(user.Id, about, book_ids, list_name, timestamp)
-	list_count, err := uls.CountExistingListsOfAUser(user.Id)
+	list_count, err := uls.CountExistingListsOfAUser(user_id)
 	if err != nil {
 		return err
 	}
@@ -68,13 +68,4 @@ func (uls *UserListService) CountExistingListsOfAUser(user_id string) (int, erro
 	}
 	return count, nil
 
-}
-func countErrorsFromSlice(err_slice []error) int {
-	counter := 0
-	for i := range err_slice {
-		if err_slice[i] != nil {
-			counter++
-		}
-	}
-	return counter
 }

@@ -16,11 +16,17 @@ type MockUserService struct {
 	err error
 }
 
-func (mbs *MockUserService) SaveUser(email string, password string) error {
+func (mbs *MockUserService) SaveUser(email string, name string, password string) error {
 	return mbs.err
 }
 func (mbs *MockUserService) GetUserByID(id string) (*domain.User, error) {
 	return &domain.User{}, mbs.err
+}
+func (mbs *MockUserService) CountUsersFromIDs(id []string) (int64, error) {
+	return 0, mbs.err
+}
+func (mbs *MockUserService) GetUserNamesByIDs(id []string) ([]string, error) {
+	return []string{}, mbs.err
 }
 func TestUser(t *testing.T) {
 

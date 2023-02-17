@@ -21,12 +21,13 @@ func NewUserActivityService(user UserServiceInterface, book repository.UserActiv
 
 func (uls *UserActivityService) SaveUserActivity(user_id string, action string, receiver string, list_id string, comment_id string, review_id string) error {
 
-	user_count, err := uls.user.GetUserNamesByIDs([]string{user_id, receiver})
+	user_names, err := uls.user.GetUserNamesByIDs([]string{receiver})
 	if err != nil {
 		// User just might not be present
 		return err
 	}
-	if user_count == 0 {
+	if len(user_names) != 1 {
+		// one of the user is not present it seems
 		return repository.Err_UserNotFound
 	}
 	// No Comment as it is a new List
@@ -45,15 +46,21 @@ func (uls *UserActivityService) SaveUserActivity(user_id string, action string, 
 		desc = strings.Replace(desc, "$1", "You", 1)
 
 	} else {
-		desc = strings.Replace(desc, "$2", "", 1)
-		if action == "comment" {
-			desc += " commented"
-		} else {
-			desc += " reacted"
-		}
-
+		desc = strings.Replace(desc, "$1", user_names[1], 1)
 	}
-	userListObject := domain.NewUserActivity(user_id, action, list_id, comment_id, review_id, desc, timestamp)
+	if action == "comment" {
+		desc = strings.Replace(desc, "$2", "commented", 1)
+	} else if action == "reaction" {
+		desc = strings.Replace(desc, "$2", "reacted", 1)
+	}
+	if comment_id != "" {
+		desc = strings.Replace(desc, "$2", "Comment", 1)
+	} else if list_id != "" {
+		desc = strings.Replace(desc, "$2", "List", 1)
+	} else if review_id != "" {
+		desc = strings.Replace(desc, "$2", "Book Review", 1)
+	}
+	userListObject := domain.NewUserActivity(user_id, action, receiver, list_id, comment_id, review_id, desc, timestamp)
 	list_count, err := uls.CountExistingListsOfAUser(user_id)
 	if err != nil {
 		return err

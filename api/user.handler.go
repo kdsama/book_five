@@ -11,6 +11,7 @@ import (
 
 type InputUser struct {
 	Email    string `json:"email"`
+	Name     string `json:"name"`
 	Password string `json:"wwl"`
 }
 
@@ -54,7 +55,7 @@ func (bh *UserHandler) postUser(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
 		return
 	}
-	err = bh.service.SaveUser(t.Email, t.Password)
+	err = bh.service.SaveUser(t.Email, t.Name, t.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintln(http.StatusInternalServerError)))

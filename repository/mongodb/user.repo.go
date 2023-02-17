@@ -3,12 +3,16 @@ package mongodb
 import (
 	// "encoding/json"
 
+	"context"
+	"log"
+
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	// "errors"
 	// "log"
 	// "fmt"
@@ -34,6 +38,7 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 		bson.M{
 			"uuid":       utils.GenerateUUID(),
 			"email":      NewUser.Email,
+			"name":       NewUser.Name,
 			"created_at": NewUser.CreatedAt,
 			"updated_at": NewUser.UpdatedAt,
 			"pwd":        NewUser.Password,
@@ -46,7 +51,7 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 	return nil
 }
 
-func (g *MongoUserRepository) GetUserById(id string) (*domain.User, error) {
+func (g *MongoUserRepository) GetUserByID(id string) (*domain.User, error) {
 	var result domain.User
 
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
@@ -84,7 +89,7 @@ func (g *MongoUserRepository) GetUserByEmail(email string) (*domain.User, error)
 	return &result, nil
 }
 
-func (g *MongoBookRepository) CountUsersFromIDs(user_ids []string) (int64, error) {
+func (g *MongoUserRepository) CountUsersFromIDs(user_ids []string) (int64, error) {
 
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx, cancel := mongoUtils.GetQueryContext()
@@ -96,4 +101,27 @@ func (g *MongoBookRepository) CountUsersFromIDs(user_ids []string) (int64, error
 		return 0, err
 	}
 	return count, err
+}
+func (g *MongoUserRepository) GetUserNamesByIDs(user_ids []string) ([]string, error) {
+	to_return := []string{}
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	ctx, cancel := mongoUtils.GetQueryContext()
+	defer cancel()
+	filter := bson.M{"uuid": bson.M{"$in": user_ids}}
+	var results []domain.User
+	opts := options.Find().SetProjection(bson.M{"name": 1})
+	cursor, err := col.Find(ctx, filter, opts)
+
+	if err != nil {
+		log.Println(err)
+		return to_return, repository.Err_UserNotFound
+	}
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		log.Println(err)
+		return to_return, repository.Err_UserNotFound
+	}
+	for _, user := range results {
+		to_return = append(to_return, user.Name)
+	}
+	return to_return, nil
 }
