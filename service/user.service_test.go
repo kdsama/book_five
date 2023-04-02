@@ -25,7 +25,7 @@ func (mub *mockUserRepo) GetUserById(user_id string) (*domain.User, error) {
 		return &domain.User{}, mub.err
 	}
 	for i := range mockUsers {
-		if mockUsers[i].Id == user_id {
+		if mockUsers[i].ID == user_id {
 			return &mockUsers[i], nil
 		}
 	}
@@ -44,12 +44,12 @@ func (mub *mockUserRepo) GetUserByEmail(email string) (*domain.User, error) {
 	return &domain.User{}, repository.Err_UserNotFound
 }
 
-func (mub *mockUserRepo) GetUserByID(email string) (*domain.User, error) {
+func (mub *mockUserRepo) GetUserByID(id string) (*domain.User, error) {
 	if mub.err != nil {
 		return &domain.User{}, mub.err
 	}
 	for i := range mockUsers {
-		if mockUsers[i].Email == email {
+		if mockUsers[i].ID == id {
 			return &mockUsers[i], nil
 		}
 

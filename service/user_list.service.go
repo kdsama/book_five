@@ -18,14 +18,15 @@ var (
 )
 
 type UserListService struct {
-	book         BookServiceInterface
-	user         UserServiceInterface
-	userlistRepo repository.UserListRepo
+	book          BookServiceInterface
+	user          UserServiceInterface
+	user_activity UserActivityServiceInterface
+	userlistRepo  repository.UserListRepo
 }
 
-func NewUserListService(user UserServiceInterface, book BookServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
+func NewUserListService(user UserServiceInterface, book BookServiceInterface, user_activity UserActivityServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
 
-	return &UserListService{book, user, userlistRepo}
+	return &UserListService{book, user, user_activity, userlistRepo}
 }
 
 func (uls *UserListService) SaveUserList(user_id string, about string, list_name string, book_ids []string) error {
@@ -33,6 +34,7 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 	user, err := uls.user.GetUserByID(user_id)
 	if err != nil {
 		// User just might not be present
+		// this check probably will be done on middleware as well , the jwt would be checked here
 		return err
 	}
 
@@ -48,7 +50,7 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 
 	timestamp := utils.GetCurrentTimestamp()
 
-	userListObject := domain.NewUserList(user.Id, about, book_ids, list_name, timestamp)
+	userListObject := domain.NewUserList(user.ID, about, book_ids, list_name, timestamp)
 	list_count, err := uls.CountExistingListsOfAUser(user_id)
 	if err != nil {
 		return err
@@ -57,6 +59,8 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 		return err_ListCreationNotAllowed
 	}
 	err = uls.userlistRepo.SaveUserList(userListObject)
+	// no need to create an activity for creating the user list ???
+	// for now lets skip it .
 	return err
 }
 
