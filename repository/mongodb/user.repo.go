@@ -9,7 +9,6 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
-	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -36,7 +35,7 @@ func (g *MongoUserRepository) SaveUser(NewUser *domain.User) error {
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{
-			"uuid":       utils.GenerateUUID(),
+			"uuid":       NewUser.ID,
 			"email":      NewUser.Email,
 			"name":       NewUser.Name,
 			"created_at": NewUser.CreatedAt,

@@ -1,7 +1,9 @@
 package domain
 
+import "github.com/kdsama/book_five/utils"
+
 type User struct {
-	Id        string `bson:"uuid" json:"user_id"`
+	ID        string `bson:"uuid" json:"user_id"`
 	Name      string `json:"name" bson:"name"`
 	Email     string `json:"email" bson:"email"`
 	Password  string `json:"wwl" bson:"pwd"`
@@ -11,5 +13,5 @@ type User struct {
 
 func NewUser(email string, name string, wwp string, timestamp int64) *User {
 
-	return &User{Email: email, Name: name, Password: wwp, CreatedAt: timestamp, UpdatedAt: timestamp}
+	return &User{ID: utils.GenerateUUID(), Email: email, Name: name, Password: wwp, CreatedAt: timestamp, UpdatedAt: timestamp}
 }

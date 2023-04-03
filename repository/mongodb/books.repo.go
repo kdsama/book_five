@@ -9,7 +9,6 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
-	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	// "errors"
 	// "log"
@@ -35,7 +34,7 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{
-			"uuid":        utils.GenerateUUID(),
+			"uuid":        NewBook.ID,
 			"name":        NewBook.Name,
 			"authors":     NewBook.Authors,
 			"co_authors":  NewBook.Co_Authors,

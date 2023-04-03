@@ -1,9 +1,11 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/kdsama/book_five/domain"
+	"github.com/kdsama/book_five/entity"
 	"github.com/kdsama/book_five/repository"
 	"github.com/kdsama/book_five/utils"
 )
@@ -15,6 +17,34 @@ type MockBookRepository struct {
 type MockCategoryService struct {
 	saveError string
 	getError  string
+}
+
+func SeedBooks(bookObject MockBookRepository) {
+
+	type bookStruct struct {
+		name           string
+		authors        []string
+		co_authors     []string
+		audiobook_urls []string
+		ebook_urls     []string
+		hard_copies    []string
+		categories     []string
+	}
+
+	book := &bookStruct{name: "david-and-goliath",
+		authors:        []string{"david gog"},
+		co_authors:     []string{},
+		audiobook_urls: []string{},
+		ebook_urls:     []string{},
+		hard_copies:    []string{},
+		categories:     []string{"comedy"}}
+
+	for i := 0; i < 10; i++ {
+		book.name = book.name + fmt.Sprintf("%d", i)
+		obj := domain.NewBook(book.name, book.authors, book.co_authors,
+			entity.MakeUrlObjects(book.audiobook_urls), entity.MakeUrlObjects(book.ebook_urls), entity.MakeUrlObjects(book.hard_copies), book.categories, utils.GetCurrentTimestamp())
+		bookObject.SaveBook(obj)
+	}
 }
 
 var MockBooks = []*domain.Book{}

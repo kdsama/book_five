@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/kdsama/book_five/entity"
+	"github.com/kdsama/book_five/utils"
 )
 
 type UserList struct {
@@ -29,7 +30,7 @@ type UserList struct {
 
 	ID        string          `bson:"uuid"`
 	User_ID   string          `bson:"user_id"`
-	text      string          `bson:"about",json:"about"`
+	About     string          `bson:"about" json:"about"`
 	Book_IDs  []string        `json:"book_ids" bson:"book_ids"`
 	Name      string          `json:"name" bson:"name"`
 	Reactions entity.Reaction `json:"reaction" bson:"reaction"`
@@ -40,5 +41,5 @@ type UserList struct {
 
 func NewUserList(user_id string, about string, book_ids []string, name string, timestamp int64) *UserList {
 
-	return &UserList{"", user_id, about, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
+	return &UserList{utils.GenerateUUID(), user_id, about, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
-	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "errors"
@@ -35,7 +34,7 @@ func (g *MongoCategoryRepository) SaveCategory(NewCategory *domain.Category) err
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{
-			"uuid":           utils.GenerateUUID(),
+			"uuid":           NewCategory.ID,
 			"name":           NewCategory.Name,
 			"sub_categories": NewCategory.SubCategories,
 			"createdAt":      NewCategory.Created_Timestamp,
@@ -119,7 +118,7 @@ func (g *MongoCategoryRepository) GetIdsByNames(names []string) ([]string, error
 		return to_return, repository.Err_CategoryNotFound
 	}
 	for _, category := range results {
-		to_return = append(to_return, category.Id)
+		to_return = append(to_return, category.ID)
 	}
 	return to_return, nil
 

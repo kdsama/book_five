@@ -9,7 +9,6 @@ import (
 	"github.com/kdsama/book_five/domain"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
-	"github.com/kdsama/book_five/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	// "errors"
 	// "log"
@@ -34,7 +33,7 @@ func (g *MongoUserListRepository) SaveUserList(user_list *domain.UserList) error
 	_, err := col.InsertOne(
 		ctx,
 		bson.M{
-			"uuid":       utils.GenerateUUID(),
+			"uuid":       user_list.ID,
 			"user_id":    user_list.User_ID,
 			"book_ids":   user_list.Book_IDs,
 			"name":       user_list.Name,

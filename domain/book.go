@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/kdsama/book_five/entity"
+	"github.com/kdsama/book_five/utils"
 )
 
 type Book struct {
@@ -20,5 +21,5 @@ type Book struct {
 
 func NewBook(name string, authors []string, co_authors []string, audio []entity.UrlObject, ebook []entity.UrlObject, hardcopy []entity.UrlObject, categories []string, timestamp int64) *Book {
 
-	return &Book{Name: name, Authors: authors, Co_Authors: co_authors, AudiobookUrls: audio, EbookUrls: ebook, Hardcopies: hardcopy, Categories: categories, Created_Timestamp: timestamp}
+	return &Book{ID: utils.GenerateUUID(), Name: name, Authors: authors, Co_Authors: co_authors, AudiobookUrls: audio, EbookUrls: ebook, Hardcopies: hardcopy, Categories: categories, Created_Timestamp: timestamp}
 }
