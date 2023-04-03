@@ -41,7 +41,7 @@ func SeedBooks(bookObject MockBookRepository) {
 
 	for i := 0; i < 10; i++ {
 		book.name = book.name + fmt.Sprintf("%d", i)
-		obj := domain.NewBook(book.name, book.authors, book.co_authors,
+		obj := domain.NewBook(book.name, "", book.authors, book.co_authors,
 			entity.MakeUrlObjects(book.audiobook_urls), entity.MakeUrlObjects(book.ebook_urls), entity.MakeUrlObjects(book.hard_copies), book.categories, utils.GetCurrentTimestamp())
 		bookObject.SaveBook(obj)
 	}
@@ -126,7 +126,7 @@ func TestSaveBook(t *testing.T) {
 				hard_copies:    []string{},
 				categories:     []string{"comedy"}},
 		}
-	got := bs.SaveBook(table.input.name,
+	got := bs.SaveBook(table.input.name, "",
 		table.input.authors, table.input.co_authors,
 		table.input.audiobook_urls, table.input.ebook_urls, table.input.hard_copies, table.input.categories)
 	if got != table.want {
@@ -194,7 +194,7 @@ func TestSaveBookErrors(t *testing.T) {
 	}
 	for _, object := range table {
 		want := object.want
-		got := object.bs.SaveBook(object.input.name,
+		got := object.bs.SaveBook(object.input.name, "",
 			object.input.authors, object.input.co_authors,
 			object.input.audiobook_urls, object.input.ebook_urls,
 			object.input.hard_copies, object.input.categories)

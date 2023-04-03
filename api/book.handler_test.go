@@ -13,7 +13,7 @@ import (
 type MockBookService struct {
 }
 
-func (mbs *MockBookService) SaveBook(name string, authors []string, co_authors []string, audiobook_urls []string,
+func (mbs *MockBookService) SaveBook(name string, image_url string, authors []string, co_authors []string, audiobook_urls []string,
 	ebook_urls []string, hard_copies []string, categories []string) error {
 	return nil
 }

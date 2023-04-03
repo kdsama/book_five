@@ -9,10 +9,10 @@ import (
 )
 
 type InputUserList struct {
-	User_id   string   `json:"user_id"`
-	About     string   `json:"about"`
-	List_name string   `json:"list_name"`
-	Book_ids  []string `json:"book_ids"`
+	User_ID  string   `json:"user_id"`
+	About    string   `json:"about"`
+	Name     string   `json:"list_name"`
+	Book_ids []string `json:"book_ids"`
 }
 
 type UserListHandler struct {
@@ -53,7 +53,7 @@ func (bh *UserListHandler) postUserList(w http.ResponseWriter, req *http.Request
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
 		return
 	}
-	err = bh.service.SaveUserList(t.User_id, t.About, t.List_name, t.Book_ids)
+	err = bh.service.SaveUserList(t.User_ID, t.About, t.Name, t.Book_ids)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintln(http.StatusInternalServerError)))
@@ -65,7 +65,7 @@ func (bh *UserListHandler) postUserList(w http.ResponseWriter, req *http.Request
 }
 
 func validatePostUserList(t InputUserList) bool {
-	if t.User_id == "" || t.About == "" || len(t.List_name) == 0 {
+	if t.User_ID == "" || t.About == "" || len(t.Name) == 0 {
 		// the length of books should be atleast 1 right ?
 		return false
 	}

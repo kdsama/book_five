@@ -11,6 +11,7 @@ import (
 
 type InputBook struct {
 	Name          string   `json:"name"`
+	Image_Url     string   `json:"image_url"`
 	Authors       []string `json:"authors"`
 	Co_Authors    []string `json:"co_authors"`
 	AudiobookUrls []string `json:"audiobook_urls"`
@@ -57,7 +58,7 @@ func (bh *BookHandler) postBook(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
 		return
 	}
-	bh.service.SaveBook(t.Name, t.Authors, t.Co_Authors, t.AudiobookUrls, t.EbookUrls, t.Hardcopies, t.Categories)
+	bh.service.SaveBook(t.Name, t.Image_Url, t.Authors, t.Co_Authors, t.AudiobookUrls, t.EbookUrls, t.Hardcopies, t.Categories)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write([]byte("ok"))

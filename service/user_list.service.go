@@ -9,12 +9,14 @@ import (
 )
 
 var (
-	MAX_LIST_COUNT = 5
+	MAX_LIST_COUNT = int64(5)
+	MAX_LIST_SIZE  = int64(5)
 )
 
 var (
 	err_ListCannotBeCreated    = errors.New("there was an issue while creating the list")
 	err_ListCreationNotAllowed = errors.New("Error list creation is not allowed")
+	err_ListSizeExceeded       = errors.New("List size exceeds the maximum size")
 )
 
 type UserListService struct {
@@ -37,7 +39,9 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 		// this check probably will be done on middleware as well , the jwt would be checked here
 		return err
 	}
-
+	if len(book_ids) > int(MAX_LIST_SIZE) {
+		return err_ListSizeExceeded
+	}
 	// No Comment as it is a new List
 	// No need to check if the book exist
 	// We will save the book separately first and only then pass it to the user list
@@ -55,7 +59,8 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 	if err != nil {
 		return err
 	}
-	if list_count >= MAX_LIST_COUNT {
+	// if one more added , we have to check whether the limit is reached or exceeded .
+	if list_count+1 >= MAX_LIST_COUNT {
 		return err_ListCreationNotAllowed
 	}
 	err = uls.userlistRepo.SaveUserList(userListObject)
@@ -64,7 +69,7 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 	return err
 }
 
-func (uls *UserListService) CountExistingListsOfAUser(user_id string) (int, error) {
+func (uls *UserListService) CountExistingListsOfAUser(user_id string) (int64, error) {
 
 	count, err := uls.userlistRepo.CountExistingListsOfAUser(user_id)
 	if err != nil && err != repository.Err_NoUserListFound {

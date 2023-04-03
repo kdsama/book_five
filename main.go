@@ -8,6 +8,7 @@ import (
 
 	"github.com/kdsama/book_five/api"
 	"github.com/kdsama/book_five/infrastructure/mongodb"
+	"github.com/kdsama/book_five/jobs"
 	"github.com/kdsama/book_five/repository"
 	mongo_repo "github.com/kdsama/book_five/repository/mongodb"
 	"github.com/kdsama/book_five/service"
@@ -36,10 +37,24 @@ func main() {
 	userInterface := service.NewUserServiceInterface(userservice)
 	userHandler := api.NewUserHandler(*userInterface)
 
-	http.HandleFunc("/api/v1/book", bookHandler.Req)
-	http.HandleFunc("/api/v1/user", userHandler.Req)
+	useractivityMongoInstance := mongo_repo.NewMongoUserActivityRepository(mongoClient, "useractivity")
+	useractivityrepo := repository.NewUserActivityRepository(useractivityMongoInstance)
+	useractivityservice := service.NewUserActivityService(userInterface, *useractivityrepo)
+	userActivityInterface := service.NewUserActivityServiceInterface(useractivityservice)
 
-	log.Fatal(http.ListenAndServe(":8090", nil))
+	userlistMongoInstance := mongo_repo.NewMongoUserListRepository(mongoClient, "userlists")
+	userlistrepo := repository.NewUserListRepository(userlistMongoInstance)
+
+	userlistservice := service.NewUserListService(userInterface, bookInterface, userActivityInterface, userlistrepo)
+	userlistserviceInterface := service.NewUserListServiceInterface(userlistservice)
+
+	userlistHandler := api.NewUserListHandler(*userlistserviceInterface)
+	jobs.SaveBooks(bookInterface)
+	http.HandleFunc("/api/v1/book", bookHandler.Req)
+	http.HandleFunc("/api/v1/user/login", userHandler.Req)
+	http.HandleFunc("/api/v1/user/list", userlistHandler.Req)
+
+	// log.Fatal(http.ListenAndServe(":8090", nil))
 
 }
 

@@ -36,6 +36,7 @@ func (g *MongoBookRepository) SaveBook(NewBook *domain.Book) error {
 		bson.M{
 			"uuid":        NewBook.ID,
 			"name":        NewBook.Name,
+			"image_url":   NewBook.Image_Url,
 			"authors":     NewBook.Authors,
 			"co_authors":  NewBook.Co_Authors,
 			"audio_urls":  NewBook.AudiobookUrls,

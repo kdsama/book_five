@@ -23,7 +23,7 @@ type BookService struct {
 func NewBookService(book repository.BookRepository, catService CategoryDI) *BookService {
 	return &BookService{book, catService}
 }
-func (bs *BookService) SaveBook(name string, authors []string, co_authors []string, audiobook_urls []string, ebook_urls []string, hard_copies []string, categories []string) error {
+func (bs *BookService) SaveBook(name string, image_url string, authors []string, co_authors []string, audiobook_urls []string, ebook_urls []string, hard_copies []string, categories []string) error {
 	// validation checks already done in the http handler .
 	// We just need to save it for now.
 	timestamp := time.Now().Unix()
@@ -52,7 +52,7 @@ func (bs *BookService) SaveBook(name string, authors []string, co_authors []stri
 		HardCopyObjects = append(HardCopyObjects, *entity.MakeUrlObject(hard_copies[k]))
 	}
 
-	BookObject := domain.NewBook(name, authors, co_authors, AudioBookObjects, EbookObjects, HardCopyObjects, categoryIds, timestamp)
+	BookObject := domain.NewBook(name, image_url, authors, co_authors, AudioBookObjects, EbookObjects, HardCopyObjects, categoryIds, timestamp)
 	err = bs.bookRepo.SaveBook(BookObject)
 	if err != nil {
 		return err

@@ -9,14 +9,14 @@ import (
 )
 
 type UserActivityService struct {
-	user             UserServiceInterface
-	userListService  UserListServiceInterface
+	user UserServiceInterface
+
 	userActivityRepo repository.UserActivityRepository
 }
 
-func NewUserActivityService(user UserServiceInterface, userListService UserListServiceInterface, userActivityRepo repository.UserActivityRepository) *UserActivityService {
+func NewUserActivityService(user UserServiceInterface, userActivityRepo repository.UserActivityRepository) *UserActivityService {
 
-	return &UserActivityService{user, userListService, userActivityRepo}
+	return &UserActivityService{user, userActivityRepo}
 }
 
 func (uls *UserActivityService) SaveUserActivity(user_id string, action string, receiver string, list_id string, comment_id string, review_id string) error {

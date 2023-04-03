@@ -22,7 +22,7 @@ func (mul *mockUserListRepo) SaveUserList(item *domain.UserList) error {
 	return nil
 }
 
-func (mul *mockUserListRepo) CountExistingListsOfAUser(user_id string) (int, error) {
+func (mul *mockUserListRepo) CountExistingListsOfAUser(user_id string) (int64, error) {
 
 	if mul.err != nil {
 		return 0, mul.err
@@ -33,7 +33,7 @@ func (mul *mockUserListRepo) CountExistingListsOfAUser(user_id string) (int, err
 			count++
 		}
 	}
-	return count, nil
+	return int64(count), nil
 }
 
 func Initialize() (*UserDI, MockBookRepository, *BookDI) {
@@ -104,6 +104,7 @@ func TestSaveUserListErrors(t *testing.T) {
 
 	// create a list
 	SeedBooks(bookObject)
+	mockUserLists = []domain.UserList{}
 	id := "123"
 	book_ids := []string{}
 	for i := 0; i < 10; i++ {
@@ -119,8 +120,9 @@ func TestSaveUserListErrors(t *testing.T) {
 			break
 		}
 	}
+
 	// trying to save list 6 times. Should not be possible
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 4; i++ {
 		err := usls.SaveUserList(id, "This is a test summary / about ", "ListName-"+fmt.Sprintf("%d", i), book_ids)
 		if err != nil {
 			t.Errorf("Did not expect any error here but got %v", err)
@@ -137,4 +139,12 @@ func TestSaveUserListErrors(t *testing.T) {
 	if got != want {
 		t.Errorf("want %v but got %v", want, got)
 	}
+	// trying to save 5 book (max limit is 4 ) should give an error
+	book_ids = append(book_ids, MockBooks[0].ID)
+	got = usls.SaveUserList(id, "This is a test summary / about ", "ListName-", book_ids)
+	want = err_ListSizeExceeded
+	if got != want {
+		t.Errorf("want %v but got %v", want, got)
+	}
+
 }
