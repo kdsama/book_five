@@ -8,7 +8,6 @@ import (
 
 	"github.com/kdsama/book_five/api"
 	"github.com/kdsama/book_five/infrastructure/mongodb"
-	"github.com/kdsama/book_five/jobs"
 	"github.com/kdsama/book_five/repository"
 	mongo_repo "github.com/kdsama/book_five/repository/mongodb"
 	"github.com/kdsama/book_five/service"
@@ -49,12 +48,12 @@ func main() {
 	userlistserviceInterface := service.NewUserListServiceInterface(userlistservice)
 
 	userlistHandler := api.NewUserListHandler(*userlistserviceInterface)
-	jobs.SaveBooks(bookInterface)
+	// jobs.SaveBooks(bookInterface)
 	http.HandleFunc("/api/v1/book", bookHandler.Req)
 	http.HandleFunc("/api/v1/user/login", userHandler.Req)
 	http.HandleFunc("/api/v1/user/list", userlistHandler.Req)
 
-	// log.Fatal(http.ListenAndServe(":8090", nil))
+	log.Fatal(http.ListenAndServe(":8090", nil))
 
 }
 

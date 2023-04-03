@@ -56,7 +56,7 @@ func (bh *UserListHandler) postUserList(w http.ResponseWriter, req *http.Request
 	err = bh.service.SaveUserList(t.User_ID, t.About, t.Name, t.Book_ids)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintln(http.StatusInternalServerError)))
+		w.Write([]byte(fmt.Sprintf("%v", err)))
 		return
 	}
 	w.WriteHeader(http.StatusOK)

@@ -42,6 +42,15 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 	if len(book_ids) > int(MAX_LIST_SIZE) {
 		return err_ListSizeExceeded
 	}
+
+	//remove duplicates
+	var book_mapping map[string]int
+	new_book_ids := []string{}
+	for i := range book_ids {
+		if _, ok := book_mapping[book_ids[i]]; !ok {
+			new_book_ids = append(new_book_ids, book_ids[i])
+		}
+	}
 	// No Comment as it is a new List
 	// No need to check if the book exist
 	// We will save the book separately first and only then pass it to the user list
@@ -54,7 +63,7 @@ func (uls *UserListService) SaveUserList(user_id string, about string, list_name
 
 	timestamp := utils.GetCurrentTimestamp()
 
-	userListObject := domain.NewUserList(user.ID, about, book_ids, list_name, timestamp)
+	userListObject := domain.NewUserList(user.ID, about, new_book_ids, list_name, timestamp)
 	list_count, err := uls.CountExistingListsOfAUser(user_id)
 	if err != nil {
 		return err
