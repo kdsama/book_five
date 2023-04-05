@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kdsama/book_five/api"
+	"github.com/kdsama/book_five/api/middleware"
 	"github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	mongo_repo "github.com/kdsama/book_five/repository/mongodb"
@@ -30,9 +31,14 @@ func main() {
 	bookInterface := service.NewBookServiceInterface(bookservice)
 	bookHandler := api.NewBookHandler(*bookInterface)
 
+	usertokenMongoInstance := mongo_repo.NewMongoUserTokenRepository(mongoClient, "usertoken")
+	usertokenrepo := repository.NewUserTokenRepository(usertokenMongoInstance)
+	usertokenservice := service.NewUserTokenService(*usertokenrepo)
+	usertokenserviceInterface := service.NewUserTokenServiceInterface(usertokenservice)
+
 	userMongoInstance := mongo_repo.NewMongoUserRepository(mongoClient, "user")
 	userrepo := repository.NewUserRepository(userMongoInstance)
-	userservice := service.NewUserService(*userrepo)
+	userservice := service.NewUserService(*userrepo, usertokenservice)
 	userInterface := service.NewUserServiceInterface(userservice)
 	userHandler := api.NewUserHandler(*userInterface)
 
@@ -46,12 +52,16 @@ func main() {
 
 	userlistservice := service.NewUserListService(userInterface, bookInterface, userActivityInterface, userlistrepo)
 	userlistserviceInterface := service.NewUserListServiceInterface(userlistservice)
-
 	userlistHandler := api.NewUserListHandler(*userlistserviceInterface)
+
+	usertokenHandler := middleware.NewUserTokenHandler(*usertokenserviceInterface)
+
 	// jobs.SaveBooks(bookInterface)
+	router := http.NewServeMux()
+
 	http.HandleFunc("/api/v1/book", bookHandler.Req)
 	http.HandleFunc("/api/v1/user/login", userHandler.Req)
-	http.HandleFunc("/api/v1/user/list", userlistHandler.Req)
+	router.Handle("/api/v1/user/list", usertokenHandler.Authenticator(userlistHandler.Handler()))
 
 	log.Fatal(http.ListenAndServe(":8090", nil))
 

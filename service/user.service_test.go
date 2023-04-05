@@ -80,7 +80,7 @@ func TestSaveUser(t *testing.T) {
 	mockUsers = append(mockUsers, *domain.NewUser("already@exists.com", "user2", "SomepasswordNotRelevantInOurCase", time.Now().Unix()))
 
 	userrepo := repository.NewUserRepository(&mockUserRepo{})
-	userservice := NewUserService(*userrepo)
+	userservice := NewUserService(*userrepo, &MockUserTokenService{})
 
 	testObject := &test{
 		title: "should return nil as all conditions are correct",
@@ -111,9 +111,9 @@ func TestSaveUserErrors(t *testing.T) {
 	}
 	mockUsers = append(mockUsers, *domain.NewUser("already@exists.com", "user2", "SomepasswordNotRelevantInOurCase", time.Now().Unix()))
 	userrepo := repository.NewUserRepository(&mockUserRepo{})
-	userservice := NewUserService(*userrepo)
+	userservice := NewUserService(*userrepo, &MockUserTokenService{})
 	userrepo1 := repository.NewUserRepository(&mockUserRepo{errors.New("Some error")})
-	userservices1 := NewUserService(*userrepo1)
+	userservices1 := NewUserService(*userrepo1, &MockUserTokenService{})
 	table := []test{
 		{title: "Should return error if user already exists",
 			want: Err_User_Present,

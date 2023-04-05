@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"time"
 
 	"github.com/kdsama/book_five/service"
 )
@@ -12,6 +13,11 @@ import (
 type InputUser struct {
 	Email    string `json:"email"`
 	Name     string `json:"name"`
+	Password string `json:"wwl"`
+}
+
+type LoginUser struct {
+	Email    string `json:"email"`
 	Password string `json:"wwl"`
 }
 
@@ -31,10 +37,47 @@ func (bh *UserHandler) Req(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodPost:
 		bh.postUser(w, req)
+	case http.MethodGet:
+		bh.loginUser(w, req)
 	default:
 		w.WriteHeader(http.StatusNotImplemented)
 		w.Write([]byte(fmt.Sprintln(http.StatusNotImplemented)))
 	}
+}
+
+func (bh *UserHandler) loginUser(w http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	var t InputUser
+	err := decoder.Decode(&t)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
+		return
+
+	}
+	ok := validateUserInformation(t)
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
+		return
+	}
+	token, err := bh.service.LoginUser(t.Email, t.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintln(err)))
+		return
+	}
+	// Set the JWT token in a cookie
+	cookie := &http.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour),
+		HttpOnly: true,
+	}
+	http.SetCookie(w, cookie)
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write([]byte("ok"))
 }
 
 func (bh *UserHandler) postUser(w http.ResponseWriter, req *http.Request) {
@@ -49,7 +92,7 @@ func (bh *UserHandler) postUser(w http.ResponseWriter, req *http.Request) {
 
 	}
 
-	ok := validatePostUser(t)
+	ok := validateUserInformation(t)
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
@@ -66,7 +109,7 @@ func (bh *UserHandler) postUser(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("ok"))
 }
 
-func validatePostUser(t InputUser) bool {
+func validateUserInformation(t InputUser) bool {
 	if t.Email == "" || t.Password == "" {
 
 		return false

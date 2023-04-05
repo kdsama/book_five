@@ -10,17 +10,33 @@ import (
 )
 
 type UserService struct {
-	UserRepo repository.UserRepository
+	UserRepo         repository.UserRepository
+	UserTokenService UserTokenInterface
 }
 
 var (
-	Err_Invalid_Hash = errors.New("hash provided is invalid")
-	Err_User_Present = errors.New("user already present")
+	Err_Invalid_Hash            = errors.New("hash provided is invalid")
+	Err_User_Present            = errors.New("user already present")
+	Err_IncorrectUserOrPassword = errors.New("user or password provided was incorrect")
 )
 
-func NewUserService(User repository.UserRepository) *UserService {
+func NewUserService(User repository.UserRepository, utsi UserTokenInterface) *UserService {
 
-	return &UserService{User}
+	return &UserService{User, utsi}
+}
+
+func (us *UserService) LoginUser(email string, password string) (string, error) {
+
+	userobject, err := us.UserRepo.GetUserByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	err = utils.ComparePassword(userobject.Password, password)
+	if err != nil {
+		return "", Err_IncorrectUserOrPassword
+	}
+	return us.UserTokenService.GenerateAndSaveUserToken(userobject.Email)
+
 }
 
 func (us *UserService) SaveUser(email string, name string, password string) error {

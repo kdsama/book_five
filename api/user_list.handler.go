@@ -35,6 +35,10 @@ func (bh *UserListHandler) Req(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func (u *UserListHandler) Handler() http.Handler {
+	return http.HandlerFunc(u.Req)
+}
+
 func (bh *UserListHandler) postUserList(w http.ResponseWriter, req *http.Request) {
 
 	decoder := json.NewDecoder(req.Body)

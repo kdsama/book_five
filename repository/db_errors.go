@@ -10,4 +10,5 @@ var (
 	ErrWriteRecord            = errors.New("cannot write to repository")
 	Err_CategoryNotFound      = errors.New("category couldnot be found ")
 	Err_NoCategorysInCategory = errors.New("no categories are present in this category")
+	Err_UserTokenNotFound     = errors.New("user token couldnot be found")
 )
