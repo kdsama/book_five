@@ -32,7 +32,7 @@ func (uts *UserTokenService) GenerateAndSaveUserToken(user_id string) (string, e
 	// Generate JWT Token
 	token, err := uts.GenerateUserToken(user_id)
 	if err != nil {
-		return "", err
+		return "", utils.Err_InvalidToken
 	}
 	userTokenObject := domain.NewUserToken(user_id, token, timestamp)
 	err = uts.UserTokenRepo.SaveUserToken(userTokenObject)
@@ -62,7 +62,7 @@ func (uts *UserTokenService) ValidateUserTokenAndGetUserID(token string) (string
 	if id != usertoken.User_ID {
 		return "", Err_MaliciousIntent
 	}
-	if usertoken.UpdatedAt >= utils.GetCurrentTimestamp() {
+	if utils.GetCurrentTimestamp()-usertoken.UpdatedAt >= utils.OneHourInSeconds() {
 		return "", Err_TokenExpired
 	}
 	return id, nil
