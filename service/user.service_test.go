@@ -153,3 +153,39 @@ func TestSaveUserErrors(t *testing.T) {
 		})
 	}
 }
+
+func TestLoginUser(t *testing.T) {
+
+	userrepo := repository.NewUserRepository(&mockUserRepo{})
+	userservice := NewUserService(*userrepo, &MockUserTokenService{})
+	userservice.SaveUser("testlogin@gmail.com", "KshitijDHINGRA", "RandomPw@123")
+
+	token, err := userservice.LoginUser("testlogin@gmail.com", "RandomPw@123")
+	if err != nil {
+		t.Errorf("Did not want an error, but got %v", err)
+	}
+	checkToken, err := userservice.UserTokenService.GetUserTokenByID("testlogin@gmail.com")
+	if err != nil {
+		t.Errorf("Did not want an error, but got %v", err)
+	}
+	if token != checkToken.Token {
+		t.Errorf("wanted %v but got %v", checkToken.Token, token)
+	}
+
+}
+
+func TestLoginUserErrors(t *testing.T) {
+	userrepo := repository.NewUserRepository(&mockUserRepo{})
+	userservice := NewUserService(*userrepo, &MockUserTokenService{})
+	userservice.SaveUser("testloginerror@gmail.com", "KshitijDHINGRA", "RandomPw@123")
+	want := repository.Err_UserNotFound
+	_, got := userservice.LoginUser("testloginerr@gmail.com", "RandomPw@123")
+	if want != got {
+		t.Errorf("Wanted %v but got %v", want, got)
+	}
+	_, got = userservice.LoginUser("testloginerror@gmail.com", "RandomPw@1234")
+	want = Err_IncorrectUserOrPassword
+	if want != got {
+		t.Errorf("Wanted %v but got %v", want, got)
+	}
+}
