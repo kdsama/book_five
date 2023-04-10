@@ -3,13 +3,14 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/kdsama/book_five/service"
 )
 
 type userContextKeyType string
 
-const userContextKey userContextKeyType = "user_id"
+const UserContextKey userContextKeyType = "user_id"
 
 type UserTokenHandler struct {
 	service service.UserTokenDI
@@ -22,13 +23,10 @@ func NewUserTokenHandler(service service.UserTokenDI) *UserTokenHandler {
 func (uth *UserTokenHandler) Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get the JWT token from the Authorization header
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+		tokenString := r.Header.Get("Authorization")
+		if tokenString != "" {
+			tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 		}
-
-		tokenString := authHeader[len("Bearer "):]
 		id, err := uth.service.ValidateUserTokenAndGetUserID(tokenString)
 
 		// Check for errors and validate the token
@@ -38,7 +36,9 @@ func (uth *UserTokenHandler) Authenticator(next http.Handler) http.Handler {
 		}
 
 		// Add the user ID to the request context
-		ctx := context.WithValue(r.Context(), userContextKey, id)
+
+		ctx := context.WithValue(r.Context(), UserContextKey, id)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

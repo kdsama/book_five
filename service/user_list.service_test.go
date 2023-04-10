@@ -36,6 +36,18 @@ func (mul *mockUserListRepo) CountExistingListsOfAUser(user_id string) (int64, e
 	return int64(count), nil
 }
 
+func (mul *mockUserListRepo) GetListByID(list_id string) (*domain.UserList, error) {
+	if mul.err != nil {
+		return &domain.UserList{}, mul.err
+	}
+	for i := range mockUserLists {
+		if mockUserLists[i].ID == list_id {
+			return &mockUserLists[i], nil
+		}
+	}
+	return &domain.UserList{}, repository.Err_UserListNotFound
+}
+
 func Initialize() (*UserDI, MockBookRepository, *BookDI) {
 	mc := MockCategoryService{}
 
@@ -59,7 +71,8 @@ func TestSaveUserList(t *testing.T) {
 
 	usi, bookObject, bsi := Initialize()
 	mockrepo := &mockUserListRepo{}
-	usls := NewUserListService(usi, bsi, NewUserActivityServiceInterface(&MockUserActivityService{}), mockrepo)
+	list_comment := NewListCommentServiceInterface(&mocklistcommentservice{})
+	usls := NewUserListService(usi, bsi, NewUserActivityServiceInterface(&MockUserActivityService{}), list_comment, mockrepo)
 
 	SeedBooks(bookObject)
 
@@ -100,7 +113,8 @@ func TestSaveUserListErrors(t *testing.T) {
 	// initialize
 	usi, bookObject, bsi := Initialize()
 	mockrepo := &mockUserListRepo{}
-	usls := NewUserListService(usi, bsi, NewUserActivityServiceInterface(&MockUserActivityService{}), mockrepo)
+	list_comment := NewListCommentServiceInterface(&mocklistcommentservice{})
+	usls := NewUserListService(usi, bsi, NewUserActivityServiceInterface(&MockUserActivityService{}), list_comment, mockrepo)
 
 	// create a list
 	SeedBooks(bookObject)

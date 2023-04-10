@@ -10,6 +10,7 @@ import (
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	// "errors"
 	// "log"
 	// "fmt"
@@ -38,7 +39,6 @@ func (g *MongoUserListRepository) SaveUserList(user_list *domain.UserList) error
 			"book_ids":   user_list.Book_IDs,
 			"name":       user_list.Name,
 			"reaction":   user_list.Reactions,
-			"comments":   user_list.Comments,
 			"created_at": user_list.CreatedAt,
 			"updated_at": user_list.UpdatedAt,
 		},
@@ -60,4 +60,21 @@ func (g *MongoUserListRepository) CountExistingListsOfAUser(user_id string) (int
 		return 0, err
 	}
 	return count, err
+}
+
+func (g *MongoUserListRepository) GetListByID(list_id string) (*domain.UserList, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	var result domain.UserList
+	query := bson.M{"uuid": list_id}
+	err := col.FindOne(ctx, query).Decode(&result)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &result, repository.Err_UserListNotFound
+		}
+		return &result, err
+	}
+	return &result, nil
 }

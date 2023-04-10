@@ -90,7 +90,7 @@ func TestSaveUser(t *testing.T) {
 			password: "e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7",
 		},
 	}
-	got := userservice.SaveUser(testObject.input.email, testObject.input.name, testObject.input.password)
+	_, got := userservice.SaveUser(testObject.input.email, testObject.input.name, testObject.input.password)
 	if testObject.want != got {
 		t.Errorf("wanted error %v but got %v", testObject.want, got)
 	}
@@ -137,7 +137,7 @@ func TestSaveUserErrors(t *testing.T) {
 		t.Run(testObject.title, func(t *testing.T) {
 			want := testObject.want
 
-			got := testObject.service.SaveUser(testObject.input.email, testObject.input.name, testObject.input.password)
+			_, got := testObject.service.SaveUser(testObject.input.email, testObject.input.name, testObject.input.password)
 			switch testObject.check {
 			case "!=":
 				if got != want {

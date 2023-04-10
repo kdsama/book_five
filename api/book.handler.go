@@ -31,6 +31,7 @@ func NewBookHandler(bookservice service.BookDI) *BookHandler {
 }
 
 func (bh *BookHandler) Req(w http.ResponseWriter, req *http.Request) {
+
 	switch req.Method {
 	case http.MethodPost:
 		bh.postBook(w, req)
@@ -71,8 +72,6 @@ func validatePostBook(t InputBook) bool {
 	}
 	for i := range t.Authors {
 		if strings.Trim(t.Authors[i], " ") == "" {
-			fmt.Println("HOIYA ???")
-			fmt.Println(t.Authors[i])
 			return true
 		}
 	}

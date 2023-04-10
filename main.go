@@ -47,10 +47,15 @@ func main() {
 	useractivityservice := service.NewUserActivityService(userInterface, *useractivityrepo)
 	userActivityInterface := service.NewUserActivityServiceInterface(useractivityservice)
 
+	listcommentMongoInstance := mongo_repo.NewMongoListCommentRepository(mongoClient, "listcomments")
+	listcommentrepo := repository.NewListCommentRepository(listcommentMongoInstance)
+	listcommentservice := service.NewListCommentService(*listcommentrepo)
+	listcommentserviceInterface := service.NewListCommentServiceInterface(listcommentservice)
+
 	userlistMongoInstance := mongo_repo.NewMongoUserListRepository(mongoClient, "userlists")
 	userlistrepo := repository.NewUserListRepository(userlistMongoInstance)
 
-	userlistservice := service.NewUserListService(userInterface, bookInterface, userActivityInterface, userlistrepo)
+	userlistservice := service.NewUserListService(userInterface, bookInterface, userActivityInterface, listcommentserviceInterface, userlistrepo)
 	userlistserviceInterface := service.NewUserListServiceInterface(userlistservice)
 	userlistHandler := api.NewUserListHandler(*userlistserviceInterface)
 
@@ -59,11 +64,13 @@ func main() {
 	// jobs.SaveBooks(bookInterface)
 	router := http.NewServeMux()
 
-	http.HandleFunc("/api/v1/book", bookHandler.Req)
-	http.HandleFunc("/api/v1/user/login", userHandler.Req)
-	router.Handle("/api/v1/user/list", usertokenHandler.Authenticator(userlistHandler.Handler()))
+	router.HandleFunc("/api/v1/book", bookHandler.Req)
+	router.HandleFunc("/api/v1/user/login", userHandler.Req)
+	router.HandleFunc("/api/v1/user/register", userHandler.Req)
+	router.Handle("/api/v1/userlist", usertokenHandler.Authenticator(userlistHandler.Handler()))
+	router.Handle("/api/v1/userlist/comment", usertokenHandler.Authenticator(userlistHandler.Handler()))
 
-	log.Fatal(http.ListenAndServe(":8090", nil))
+	log.Fatal(http.ListenAndServe(":8090", router))
 
 }
 

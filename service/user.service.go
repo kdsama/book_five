@@ -39,26 +39,29 @@ func (us *UserService) LoginUser(email string, password string) (string, error) 
 
 }
 
-func (us *UserService) SaveUser(email string, name string, password string) error {
+func (us *UserService) SaveUser(email string, name string, password string) (string, error) {
 
 	_, err := us.UserRepo.GetUserByEmail(email)
 
 	if err == nil {
-		return Err_User_Present
+		return "", Err_User_Present
 	}
 
 	if err != repository.Err_UserNotFound {
-		return err
+		return "", err
 	}
 
 	timestamp := time.Now().Unix()
 	encryptedPassword, err := utils.GenerateHashForPassword(password)
 	if err != nil {
-		return err
+		return "", err
 	}
 	userObject := domain.NewUser(email, name, encryptedPassword, timestamp)
-	us.UserRepo.SaveUser(userObject)
-	return nil
+	err = us.UserRepo.SaveUser(userObject)
+	if err != nil {
+		return "", err
+	}
+	return us.UserTokenService.GenerateAndSaveUserToken(userObject.Email)
 }
 
 func (us *UserService) GetUserByID(id string) (*domain.User, error) {

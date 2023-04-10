@@ -34,12 +34,12 @@ type UserList struct {
 	Book_IDs  []string        `json:"book_ids" bson:"book_ids"`
 	Name      string          `json:"name" bson:"name"`
 	Reactions entity.Reaction `json:"reaction" bson:"reaction"`
-	Comments  []ListComment   `json:"comments" bson:"comments"`
-	CreatedAt int64           `json:"created_at" bson:"created_at"`
-	UpdatedAt int64           `json:"updated_at" bson:"updated_at"`
+
+	CreatedAt int64 `json:"created_at" bson:"created_at"`
+	UpdatedAt int64 `json:"updated_at" bson:"updated_at"`
 }
 
 func NewUserList(user_id string, about string, book_ids []string, name string, timestamp int64) *UserList {
 
-	return &UserList{utils.GenerateUUID(), user_id, about, book_ids, name, *entity.NewReaction(), []ListComment{}, timestamp, timestamp}
+	return &UserList{utils.GenerateUUID(), user_id, about, book_ids, name, *entity.NewReaction(), timestamp, timestamp}
 }

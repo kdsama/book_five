@@ -53,7 +53,7 @@ func TestPostUser(t *testing.T) {
 			want: http.StatusOK}
 
 		body, _ := json.Marshal(request.bdy)
-		req, err := http.NewRequest("POST", "/api/v1/book", bytes.NewReader(body))
+		req, err := http.NewRequest("POST", "/api/v1/user/register", bytes.NewReader(body))
 		if err != nil {
 			t.Error(err)
 		}
@@ -114,7 +114,7 @@ func TestPostUserErrors(t *testing.T) {
 	for _, request := range requests {
 		t.Run(request.title, func(t *testing.T) {
 			body, _ := json.Marshal(request.bdy)
-			req, err := http.NewRequest("POST", "/api/v1/book", bytes.NewReader(body))
+			req, err := http.NewRequest("POST", "/api/v1/user/register", bytes.NewReader(body))
 			if err != nil {
 				t.Error(err)
 			}

@@ -17,18 +17,20 @@ var (
 	err_ListCannotBeCreated    = errors.New("there was an issue while creating the list")
 	err_ListCreationNotAllowed = errors.New("Error list creation is not allowed")
 	err_ListSizeExceeded       = errors.New("List size exceeds the maximum size")
+	err_CannotComment          = errors.New("user is not allowed to comment here.")
 )
 
 type UserListService struct {
 	book          BookServiceInterface
 	user          UserServiceInterface
 	user_activity UserActivityServiceInterface
+	comment       ListCommentServiceInterface
 	userlistRepo  repository.UserListRepo
 }
 
-func NewUserListService(user UserServiceInterface, book BookServiceInterface, user_activity UserActivityServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
+func NewUserListService(user UserServiceInterface, book BookServiceInterface, user_activity UserActivityServiceInterface, list_comment ListCommentServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
 
-	return &UserListService{book, user, user_activity, userlistRepo}
+	return &UserListService{book, user, user_activity, list_comment, userlistRepo}
 }
 
 func (uls *UserListService) SaveUserList(user_id string, about string, list_name string, book_ids []string) error {
@@ -85,5 +87,23 @@ func (uls *UserListService) CountExistingListsOfAUser(user_id string) (int64, er
 		return 0, err
 	}
 	return count, nil
+
+}
+
+func (uls *UserListService) SaveComment(list_id string, user_id string, comment string) (string, error) {
+
+	// check if list exists
+	_, err := uls.userlistRepo.GetListByID(list_id)
+	if err != nil {
+		return "", err
+	}
+	// false check if user is allowed to do put a comment
+	canComment := true
+
+	if !canComment {
+		return "", err_CannotComment
+	}
+	return uls.comment.SaveListComment(user_id, list_id, comment)
+	//
 
 }
