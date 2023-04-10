@@ -23,3 +23,7 @@ func (bs *ListCommentService) SaveListComment(list_id string, user_id string, co
 	return listObject.ID, bs.listcommentRepo.SaveListComment(listObject)
 
 }
+
+func (bs *ListCommentService) GetCommentsByListID(list_id string) ([]domain.ListComment, error) {
+	return bs.listcommentRepo.GetCommentsByListID(list_id)
+}

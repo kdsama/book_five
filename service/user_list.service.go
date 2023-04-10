@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/kdsama/book_five/domain"
 	"github.com/kdsama/book_five/repository"
@@ -93,17 +94,28 @@ func (uls *UserListService) CountExistingListsOfAUser(user_id string) (int64, er
 func (uls *UserListService) SaveComment(list_id string, user_id string, comment string) (string, error) {
 
 	// check if list exists
-	_, err := uls.userlistRepo.GetListByID(list_id)
+	list, err := uls.userlistRepo.GetListByID(list_id)
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("LIST IS ", list)
 	// false check if user is allowed to do put a comment
 	canComment := true
 
 	if !canComment {
 		return "", err_CannotComment
 	}
-	return uls.comment.SaveListComment(user_id, list_id, comment)
+	return uls.comment.SaveListComment(list_id, user_id, comment)
 	//
 
+}
+
+func (uls *UserListService) GetComments(list_id string) ([]domain.ListComment, error) {
+	// check if list exists
+	_, err := uls.userlistRepo.GetListByID(list_id)
+	if err != nil {
+		return []domain.ListComment{}, err
+	}
+
+	return uls.comment.GetCommentsByListID(list_id)
 }

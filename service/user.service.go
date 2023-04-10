@@ -35,7 +35,7 @@ func (us *UserService) LoginUser(email string, password string) (string, error) 
 	if err != nil {
 		return "", Err_IncorrectUserOrPassword
 	}
-	return us.UserTokenService.GenerateAndSaveUserToken(userobject.Email)
+	return us.UserTokenService.GenerateAndSaveUserToken(userobject.ID)
 
 }
 
@@ -61,7 +61,7 @@ func (us *UserService) SaveUser(email string, name string, password string) (str
 	if err != nil {
 		return "", err
 	}
-	return us.UserTokenService.GenerateAndSaveUserToken(userObject.Email)
+	return us.UserTokenService.GenerateAndSaveUserToken(userObject.ID)
 }
 
 func (us *UserService) GetUserByID(id string) (*domain.User, error) {

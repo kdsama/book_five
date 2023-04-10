@@ -47,6 +47,8 @@ func (bh *UserListHandler) Req(w http.ResponseWriter, req *http.Request) {
 		}
 	case "/api/v1/userlist/comment":
 		switch req.Method {
+		case http.MethodGet:
+			bh.getListComments(w, req)
 		case http.MethodPost:
 			fmt.Println("USER ID IS ?????>>>>>>>>>>>>>>>123123123123>>>>>>>>A>>")
 			bh.postListComment(w, req)
@@ -125,6 +127,31 @@ func (bh *UserListHandler) postListComment(w http.ResponseWriter, req *http.Requ
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write([]byte(comment_id))
 
+}
+
+func (bh *UserListHandler) getListComments(w http.ResponseWriter, req *http.Request) {
+	queryValues := req.URL.Query()
+	list_id := queryValues.Get("list_id")
+	if list_id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintln(http.StatusBadRequest)))
+		return
+	}
+	listcomments, err := bh.service.GetComments(list_id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("%v", err)))
+		return
+	}
+	listcommentJSON, err := json.Marshal(listcomments)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("%v", err)))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write(listcommentJSON)
 }
 
 func validatePostListComment(t InputListComment) bool {

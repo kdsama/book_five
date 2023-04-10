@@ -16,8 +16,8 @@ type MockUserService struct {
 	err error
 }
 
-func (mbs *MockUserService) SaveUser(email string, name string, password string) error {
-	return mbs.err
+func (mbs *MockUserService) SaveUser(email string, name string, password string) (string, error) {
+	return "", mbs.err
 }
 func (mbs *MockUserService) LoginUser(email string, password string) (string, error) {
 	return "", mbs.err
