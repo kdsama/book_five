@@ -68,7 +68,7 @@ func main() {
 	router.HandleFunc("/api/v1/user/login", userHandler.Req)
 	router.HandleFunc("/api/v1/user/register", userHandler.Req)
 	router.Handle("/api/v1/userlist", usertokenHandler.Authenticator(userlistHandler.Handler()))
-	router.Handle("/api/v1/userlist/comment", usertokenHandler.Authenticator(userlistHandler.Handler()))
+	router.Handle("/api/v1/userlist/", usertokenHandler.Authenticator(userlistHandler.Handler()))
 
 	log.Fatal(http.ListenAndServe(":8090", router))
 

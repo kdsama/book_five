@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	domain "github.com/kdsama/book_five/domain"
@@ -25,6 +26,7 @@ func (muts *MockUserTokenService) GetUserTokenByID(user_id string) (*domain.User
 	if muts.err != nil {
 		return &domain.UserToken{}, muts.err
 	}
+	fmt.Println(mockTokens)
 	for i := range mockTokens {
 		if mockTokens[i].User_ID == user_id {
 			return &mockTokens[i], nil

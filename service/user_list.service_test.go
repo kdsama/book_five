@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	domain "github.com/kdsama/book_five/domain"
+	"github.com/kdsama/book_five/entity"
 	"github.com/kdsama/book_five/repository"
 )
 
@@ -46,6 +47,17 @@ func (mul *mockUserListRepo) GetListByID(list_id string) (*domain.UserList, erro
 		}
 	}
 	return &domain.UserList{}, repository.Err_UserListNotFound
+}
+func (mul *mockUserListRepo) UpdateUserListReactions(list_id string, reaction entity.Reaction) error {
+	if mul.err != nil {
+		return mul.err
+	}
+	for i := range mockUserLists {
+		if mockUserLists[i].ID == list_id {
+			mockUserLists[i].Reactions = reaction
+		}
+	}
+	return nil
 }
 
 func Initialize() (*UserDI, MockBookRepository, *BookDI) {

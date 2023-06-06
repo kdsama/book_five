@@ -3,6 +3,7 @@ package domain
 type UserActivity struct {
 	User_ID    string `json:"user_id" bson:"user_id"`
 	Action     string `json:"action" bson:"action"`
+	Reaction   string `json:"reaction" bson:"reaction"`
 	Receiver   string `json:"action_on" bson:"action_on"`
 	List_ID    string `json:"list_id" bson:"list_id"`
 	Comment_ID string `json:"comment_id" bson:"comment_id"`
@@ -31,6 +32,6 @@ type UserActivity struct {
 	//lets do  that atleast .
 }
 
-func NewUserActivity(user_id string, action string, receiver string, list_id string, comment_id string, review_id string, desc string, timestamp int64) *UserActivity {
-	return &UserActivity{user_id, action, receiver, list_id, comment_id, review_id, desc, timestamp, timestamp}
+func NewUserActivity(user_id string, action string, reaction string, receiver string, list_id string, comment_id string, review_id string, desc string, timestamp int64) *UserActivity {
+	return &UserActivity{user_id, action, reaction, receiver, list_id, comment_id, review_id, desc, timestamp, timestamp}
 }

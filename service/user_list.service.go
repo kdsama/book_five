@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kdsama/book_five/domain"
+	"github.com/kdsama/book_five/entity"
 	"github.com/kdsama/book_five/repository"
 	"github.com/kdsama/book_five/utils"
 )
@@ -18,7 +19,8 @@ var (
 	err_ListCannotBeCreated    = errors.New("there was an issue while creating the list")
 	err_ListCreationNotAllowed = errors.New("Error list creation is not allowed")
 	err_ListSizeExceeded       = errors.New("List size exceeds the maximum size")
-	err_CannotComment          = errors.New("user is not allowed to comment here.")
+	err_CannotComment          = errors.New("user is not allowed to comment on this list.")
+	err_CannotReact            = errors.New("user is not allowed to react on the list")
 )
 
 type UserListService struct {
@@ -98,14 +100,23 @@ func (uls *UserListService) SaveComment(list_id string, user_id string, comment 
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("LIST IS ", list)
+
 	// false check if user is allowed to do put a comment
 	canComment := true
 
 	if !canComment {
 		return "", err_CannotComment
 	}
-	return uls.comment.SaveListComment(list_id, user_id, comment)
+
+	id, err := uls.comment.SaveListComment(list_id, user_id, comment)
+	if err != nil {
+		return "", err
+	}
+	err = uls.user_activity.SaveUserActivity(user_id, "comment", "", list.User_ID, list_id, "", "")
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 	//
 
 }
@@ -118,4 +129,66 @@ func (uls *UserListService) GetComments(list_id string) ([]domain.ListComment, e
 	}
 
 	return uls.comment.GetCommentsByListID(list_id)
+}
+
+func (uls *UserListService) React(user_id string, list_id string, reaction string, comment_id string) error {
+
+	// Check if user-list exists,if it does return it
+	list, err := uls.userlistRepo.GetListByID(list_id)
+	if err != nil {
+		return err
+	}
+	canReact := true
+	if !canReact {
+		return err_CannotReact
+	}
+	existing_reactions := list.Reactions
+	previous_reaction, err := uls.user_activity.GetUserReactionActivityByUserAndListID(user_id, list_id)
+	fmt.Printf("%+v %s \n ", previous_reaction, previous_reaction.Reaction)
+	if err != nil && err != repository.Err_ActivityNotFound {
+		return err
+	}
+
+	switch reaction {
+	case "like":
+		existing_reactions.Like++
+	case "dislike":
+		existing_reactions.DisLike++
+	case "love":
+		existing_reactions.Love++
+	case "angry":
+		existing_reactions.Angry++
+	}
+	switch previous_reaction.Reaction {
+	case "like":
+		existing_reactions.Like--
+	case "dislike":
+		existing_reactions.DisLike--
+	case "love":
+		existing_reactions.Love--
+	case "angry":
+		existing_reactions.Angry--
+	}
+	err_new := uls.UpdateUserListReactions(list_id, existing_reactions)
+	if err_new != nil {
+		return err
+	}
+	if err == repository.Err_ActivityNotFound {
+		return uls.user_activity.SaveUserActivity(user_id, "reaction", reaction, list.User_ID, list_id, "", "")
+	}
+
+	return uls.user_activity.UpdateUserActivty(user_id, "reaction", reaction, list.User_ID, list_id, "", "")
+
+	// check if the person already reacted
+	// if the have already reacted on this
+	// check which reaction it was
+	// if its the same reaction dont do anything
+	// if its not , undo the previous reaction , do the next reaction
+	// save the updates on userlist
+	// save user activity
+
+}
+
+func (uls *UserListService) UpdateUserListReactions(list_id string, reaction entity.Reaction) error {
+	return uls.userlistRepo.UpdateUserListReactions(list_id, reaction)
 }

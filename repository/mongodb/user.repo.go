@@ -103,6 +103,7 @@ func (g *MongoUserRepository) CountUsersFromIDs(user_ids []string) (int64, error
 }
 func (g *MongoUserRepository) GetUserNamesByIDs(user_ids []string) ([]string, error) {
 	to_return := []string{}
+
 	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
 	ctx, cancel := mongoUtils.GetQueryContext()
 	defer cancel()
@@ -119,6 +120,7 @@ func (g *MongoUserRepository) GetUserNamesByIDs(user_ids []string) ([]string, er
 		log.Println(err)
 		return to_return, repository.Err_UserNotFound
 	}
+
 	for _, user := range results {
 		to_return = append(to_return, user.Name)
 	}

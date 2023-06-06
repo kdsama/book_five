@@ -13,4 +13,5 @@ var (
 	Err_UserTokenNotFound     = errors.New("user token couldnot be found")
 	Err_UserListNotFound      = errors.New("user list couldnot be found")
 	Err_CannotLoadComments    = errors.New("cannot load comments, please try again later")
+	Err_ActivityNotFound      = errors.New("activity couldnot be found")
 )

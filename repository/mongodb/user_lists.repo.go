@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kdsama/book_five/domain"
+	"github.com/kdsama/book_five/entity"
 	mongoUtils "github.com/kdsama/book_five/infrastructure/mongodb"
 	"github.com/kdsama/book_five/repository"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,6 +42,7 @@ func (g *MongoUserListRepository) SaveUserList(user_list *domain.UserList) error
 			"reaction":   user_list.Reactions,
 			"created_at": user_list.CreatedAt,
 			"updated_at": user_list.UpdatedAt,
+			"about":      user_list.About,
 		},
 	)
 
@@ -77,4 +79,19 @@ func (g *MongoUserListRepository) GetListByID(list_id string) (*domain.UserList,
 		return &result, err
 	}
 	return &result, nil
+}
+
+func (g *MongoUserListRepository) UpdateUserListReactions(list_id string, reaction entity.Reaction) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	col := g.repo.Client.Database(g.repo.Db).Collection(g.current)
+	filter := bson.M{"uuid": list_id}
+	update := bson.M{"$set": bson.M{"reaction": bson.M{"like": reaction.Like, "dislike": reaction.DisLike, "love": reaction.Love, "angry": reaction.Angry}}}
+
+	result, err := col.UpdateOne(ctx, filter, update)
+	print(result)
+	if err != nil {
+		return err
+	}
+	return nil
 }
