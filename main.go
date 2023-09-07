@@ -20,7 +20,6 @@ func main() {
 	mongoClient := ConnectMongo(ctx)
 	bookMongoInstance := mongo_repo.NewMongoBookRepository(mongoClient, "books")
 	bookrepo := repository.NewBookRepository(bookMongoInstance)
-
 	categoryMongoInstance := mongo_repo.NewMongoCategoryRepository(mongoClient, "categories")
 	categoryrepo := repository.NewCategoryRepository(categoryMongoInstance)
 	categoryservice := service.NewCategoryService(*categoryrepo)
@@ -37,14 +36,13 @@ func main() {
 	usertokenserviceInterface := service.NewUserTokenServiceInterface(usertokenservice)
 
 	userMongoInstance := mongo_repo.NewMongoUserRepository(mongoClient, "user")
-	userrepo := repository.NewUserRepository(userMongoInstance)
-	userservice := service.NewUserService(*userrepo, usertokenservice)
-	userInterface := service.NewUserServiceInterface(userservice)
-	userHandler := api.NewUserHandler(*userInterface)
+
+	userservice := service.NewUserService(userMongoInstance, usertokenservice)
+	userHandler := api.NewUserHandler(userservice)
 
 	useractivityMongoInstance := mongo_repo.NewMongoUserActivityRepository(mongoClient, "useractivity")
 	useractivityrepo := repository.NewUserActivityRepository(useractivityMongoInstance)
-	useractivityservice := service.NewUserActivityService(userInterface, *useractivityrepo)
+	useractivityservice := service.NewUserActivityService(userservice, *useractivityrepo)
 	userActivityInterface := service.NewUserActivityServiceInterface(useractivityservice)
 
 	listcommentMongoInstance := mongo_repo.NewMongoListCommentRepository(mongoClient, "listcomments")
@@ -55,7 +53,7 @@ func main() {
 	userlistMongoInstance := mongo_repo.NewMongoUserListRepository(mongoClient, "userlists")
 	userlistrepo := repository.NewUserListRepository(userlistMongoInstance)
 
-	userlistservice := service.NewUserListService(userInterface, bookInterface, userActivityInterface, listcommentserviceInterface, userlistrepo)
+	userlistservice := service.NewUserListService(userservice, bookInterface, userActivityInterface, listcommentserviceInterface, userlistrepo)
 	userlistserviceInterface := service.NewUserListServiceInterface(userlistservice)
 	userlistHandler := api.NewUserListHandler(*userlistserviceInterface)
 
@@ -74,6 +72,7 @@ func main() {
 
 }
 
+// ConnectMongo will connect to the database.
 func ConnectMongo(ctx context.Context) *mongodb.MongoClient {
 	mongoClient := mongodb.GetMongoClient("mongodb://localhost:27017", "book_five")
 	err := mongoClient.Client.Ping(ctx, nil)

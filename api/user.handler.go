@@ -21,12 +21,12 @@ type LoginUser struct {
 }
 
 type UserHandler struct {
-	service service.UserDI
+	service service.UserServicer
 }
 
 var MIN_PASSWORD_HASH_LENGTH int = 30
 
-func NewUserHandler(bookservice service.UserDI) *UserHandler {
+func NewUserHandler(bookservice service.UserServicer) *UserHandler {
 
 	return &UserHandler{bookservice}
 

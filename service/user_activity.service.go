@@ -9,12 +9,12 @@ import (
 )
 
 type UserActivityService struct {
-	user UserServiceInterface
+	user UserServicer
 
 	userActivityRepo repository.UserActivityRepository
 }
 
-func NewUserActivityService(user UserServiceInterface, userActivityRepo repository.UserActivityRepository) *UserActivityService {
+func NewUserActivityService(user UserServicer, userActivityRepo repository.UserActivityRepository) *UserActivityService {
 
 	return &UserActivityService{user, userActivityRepo}
 }

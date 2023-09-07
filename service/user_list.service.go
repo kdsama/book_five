@@ -25,13 +25,13 @@ var (
 
 type UserListService struct {
 	book          BookServiceInterface
-	user          UserServiceInterface
+	user          UserServicer
 	user_activity UserActivityServiceInterface
 	comment       ListCommentServiceInterface
 	userlistRepo  repository.UserListRepo
 }
 
-func NewUserListService(user UserServiceInterface, book BookServiceInterface, user_activity UserActivityServiceInterface, list_comment ListCommentServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
+func NewUserListService(user UserServicer, book BookServiceInterface, user_activity UserActivityServiceInterface, list_comment ListCommentServiceInterface, userlistRepo repository.UserListRepo) *UserListService {
 
 	return &UserListService{book, user, user_activity, list_comment, userlistRepo}
 }

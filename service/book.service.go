@@ -30,6 +30,7 @@ func (bs *BookService) SaveBook(name string, image_url string, authors []string,
 	// Get all Ids of categories
 	categoryIds, err := bs.catService.GetIdsByNames(categories)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	if len(categoryIds) == 0 {

@@ -10,7 +10,7 @@ import (
 )
 
 type UserService struct {
-	UserRepo         repository.UserRepository
+	UserRepo         repository.UserRepo
 	UserTokenService UserTokenInterface
 }
 
@@ -20,7 +20,7 @@ var (
 	Err_IncorrectUserOrPassword = errors.New("user or password provided was incorrect")
 )
 
-func NewUserService(User repository.UserRepository, utsi UserTokenInterface) *UserService {
+func NewUserService(User repository.UserRepo, utsi UserTokenInterface) *UserService {
 
 	return &UserService{User, utsi}
 }

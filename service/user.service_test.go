@@ -79,8 +79,7 @@ func TestSaveUser(t *testing.T) {
 	}
 	mockUsers = append(mockUsers, *domain.NewUser("already@exists.com", "user2", "SomepasswordNotRelevantInOurCase", time.Now().Unix()))
 
-	userrepo := repository.NewUserRepository(&mockUserRepo{})
-	userservice := NewUserService(*userrepo, &MockUserTokenService{})
+	userservice := NewUserService(&mockUserRepo{}, &MockUserTokenService{})
 
 	testObject := &test{
 		title: "should return nil as all conditions are correct",
@@ -110,10 +109,10 @@ func TestSaveUserErrors(t *testing.T) {
 		service *UserService
 	}
 	mockUsers = append(mockUsers, *domain.NewUser("already@exists.com", "user2", "SomepasswordNotRelevantInOurCase", time.Now().Unix()))
-	userrepo := repository.NewUserRepository(&mockUserRepo{})
-	userservice := NewUserService(*userrepo, &MockUserTokenService{})
-	userrepo1 := repository.NewUserRepository(&mockUserRepo{errors.New("Some error")})
-	userservices1 := NewUserService(*userrepo1, &MockUserTokenService{})
+	// userrepo := repository.NewUserRepository(&mockUserRepo{})
+	userservice := NewUserService(&mockUserRepo{}, &MockUserTokenService{})
+	// userrepo1 := repository.NewUserRepository(&mockUserRepo{errors.New("Some error")})
+	userservices1 := NewUserService(&mockUserRepo{errors.New("Some error")}, &MockUserTokenService{})
 	table := []test{
 		{title: "Should return error if user already exists",
 			want: Err_User_Present,
@@ -175,8 +174,8 @@ func TestLoginUser(t *testing.T) {
 }
 
 func TestLoginUserErrors(t *testing.T) {
-	userrepo := repository.NewUserRepository(&mockUserRepo{})
-	userservice := NewUserService(*userrepo, &MockUserTokenService{})
+	// userrepo := repository.NewUserRepository(&mockUserRepo{})
+	userservice := NewUserService(&mockUserRepo{}, &MockUserTokenService{})
 	userservice.SaveUser("testloginerror@gmail.com", "KshitijDHINGRA", "RandomPw@123")
 	want := repository.Err_UserNotFound
 	_, got := userservice.LoginUser("testloginerr@gmail.com", "RandomPw@123")

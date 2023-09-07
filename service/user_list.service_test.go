@@ -60,23 +60,23 @@ func (mul *mockUserListRepo) UpdateUserListReactions(list_id string, reaction en
 	return nil
 }
 
-func Initialize() (*UserDI, MockBookRepository, *BookDI) {
+func Initialize() (UserServicer, MockBookRepository, *BookDI) {
 	mc := MockCategoryService{}
 
 	mci := NewCategoryServiceInterface(&mc)
 	mci.SaveCategory("comedy", []string{})
 
 	mrepo := &mockUserRepo{}
-	usrepo := repository.NewUserRepository(mrepo)
-	us := NewUserService(*usrepo, &MockUserTokenService{})
-	usi := NewUserServiceInterface(us)
-	usi.SaveUser("kshitijdhingra@gmail.com", "kshitij", "e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7")
+	// usrepo := repository.NewUserRepository(mrepo)
+	us := NewUserService(mrepo, &MockUserTokenService{})
+	// usi := NewUserServicer(us)
+	us.SaveUser("kshitijdhingra@gmail.com", "kshitij", "e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7")
 	bookObject := MockBookRepository{}
 	br := repository.NewBookRepository(&bookObject)
 
 	bs := NewBookService(*br, *mci)
 	bsi := NewBookServiceInterface(bs)
-	return usi, bookObject, bsi
+	return us, bookObject, bsi
 }
 
 func TestSaveUserList(t *testing.T) {

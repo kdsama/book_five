@@ -2,7 +2,7 @@ package jobs
 
 import "github.com/kdsama/book_five/service"
 
-func categorySeeder(categoryservice *service.CategoryService) {
+func CategorySeeder(categoryservice *service.CategoryService) {
 	categoryservice.SaveCategory("Adventure stories", []string{})
 	categoryservice.SaveCategory("Classics", []string{})
 	categoryservice.SaveCategory("Crime", []string{})

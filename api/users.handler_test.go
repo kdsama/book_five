@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/kdsama/book_five/domain"
-	"github.com/kdsama/book_five/service"
 )
 
 type MockUserService struct {
@@ -43,8 +42,8 @@ func TestPostUser(t *testing.T) {
 		bdy  map[string]interface{}
 		want int
 	}
-	us := service.NewUserServiceInterface(&MockUserService{})
-	userHandler := NewUserHandler(*us)
+
+	userHandler := NewUserHandler(&MockUserService{})
 
 	t.Run("Correct User and PW", func(t *testing.T) {
 		request := &requestContent{
@@ -71,8 +70,7 @@ func TestPostUser(t *testing.T) {
 }
 func TestPostUserErrors(t *testing.T) {
 
-	us := service.NewUserServiceInterface(&MockUserService{errors.New("Some error")})
-	userHandler := NewUserHandler(*us)
+	userHandler := NewUserHandler(&MockUserService{errors.New("Some error")})
 
 	type requestContent struct {
 		bdy   map[string]interface{}
